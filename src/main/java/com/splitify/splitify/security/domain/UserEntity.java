@@ -5,20 +5,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "T_USER")
+@Table(name = "USER")
 @Builder
 public class UserEntity {
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private int userId;
     private String userName;
-    private String password;
+    private String firstName;
+    private String lastName;
     private String email;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Credential credential;
+
+    public void addCredential(String password) {
+        setCredential(Credential.builder().user(this).password(password).build());
+    }
 }

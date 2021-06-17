@@ -39,7 +39,8 @@ public class UserService {
 
     public String signUp(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
-        UserEntity userEntity = UserEntity.builder().email(user.getEmail()).userName(user.getUserName()).password(encodedPassword).build();
+        UserEntity userEntity = UserEntity.builder().email(user.getEmail()).userName(user.getUserName()).build();
+        userEntity.addCredential(encodedPassword);
         userRepository.save(userEntity);
         return jwtUtil.generateToken(user.getUserName());
     }
@@ -55,6 +56,6 @@ public class UserService {
     }
 
     private User buildUser(UserEntity user) {
-        return User.builder().email(user.getEmail()).id(user.getId()).userName(user.getUserName()).build();
+        return User.builder().email(user.getEmail()).id(user.getUserId()).userName(user.getUserName()).build();
     }
 }

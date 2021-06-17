@@ -24,12 +24,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException("Not Found: " + username);
         }
-        return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getPassword(), new ArrayList<>());
+        return new org.springframework.security.core.userdetails.User(user.getUserName(), user.getCredential().getPassword(), new ArrayList<>());
     }
 
     public int addUser(UserEntity user) {
-        String encodedPass = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPass);
-        return repository.save(user).getId();
+        String encodedPass = passwordEncoder.encode(user.getCredential().getPassword());
+        user.getCredential().setPassword(encodedPass);
+        return repository.save(user).getUserId();
     }
 }
