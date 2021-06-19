@@ -17,13 +17,14 @@ import java.util.Calendar;
 @Builder
 public class Payment {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer paymentId;
-    private Integer fromId;
-    private Integer toId;
-    private BigDecimal amount;
-    private Calendar onDate;
-    private Integer createdBy;
-    private Integer groupId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer paymentId;
+
+  private Integer fromId;
+  private Integer toId;
+  private BigDecimal amount;
+  private Calendar onDate;
+  private Integer createdBy;
+  private Integer groupId;
 }

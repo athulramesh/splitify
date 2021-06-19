@@ -1,6 +1,5 @@
 package com.splitify.splitify.connection.domain;
 
-import com.splitify.splitify.security.domain.Credential;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,17 +15,22 @@ import javax.persistence.*;
 @Builder
 public class Group {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer groupId;
-    private String groupName;
-    private Integer createdBy;
-    private String status;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer groupId;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private GroupMember groupMember;
+  private String groupName;
+  private Integer createdBy;
+  private String status;
 
-    public void addGroupMember(Integer createdBy) {
-        setGroupMember(GroupMember.builder().group(this).userId(createdBy).status("NEW").build());
-    }
+  @OneToMany(
+      mappedBy = "group",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private GroupMember groupMember;
+
+  public void addGroupMember(Integer createdBy) {
+    setGroupMember(GroupMember.builder().group(this).userId(createdBy).status("NEW").build());
+  }
 }

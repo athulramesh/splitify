@@ -14,11 +14,13 @@ import javax.persistence.*;
 @Table(name = "CREDENTIAL")
 @Builder
 public class Credential {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private int credentialId;
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USERID", nullable = false)
-    private UserEntity user;
-    private String password;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private int credentialId;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "USERID", nullable = false)
+  private UserEntity user;
+
+  private String password;
 }

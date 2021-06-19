@@ -15,16 +15,15 @@ import javax.persistence.*;
 @Builder
 public class GroupMember {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer groupMemberId;
-    private Integer userId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer groupMemberId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "GROUPID", nullable = false)
-    private Group group;
+  private Integer userId;
 
-    private String status;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "GROUPID", nullable = false)
+  private Group group;
 
-
+  private String status;
 }
