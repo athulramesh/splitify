@@ -30,6 +30,9 @@ public class Connection {
   @Column(name = "STATUS")
   private String status;
 
+  @Column(name = "REQUESTDATE")
+  private Calendar requestDate;
+
   @Column(name = "APPROVALDATE")
   private Calendar approvalDate;
 
