@@ -10,8 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 public class UserService {
   @Autowired CustomUserDetailsService userDetailsService;
@@ -20,6 +18,13 @@ public class UserService {
   @Autowired private AuthenticationManager authenticationManager;
   @Autowired private PasswordEncoder passwordEncoder;
 
+  /**
+   * sign in
+   *
+   * @param authRequest authRequest
+   * @return JWT token
+   * @throws Exception exception
+   */
   public String signIn(AuthRequest authRequest) throws Exception {
     try {
       authenticationManager.authenticate(
@@ -31,29 +36,55 @@ public class UserService {
     return jwtUtil.generateToken(authRequest.getUserName());
   }
 
+  /**
+   * Sign up
+   *
+   * @param user user
+   * @return JWT token
+   */
   public String signUp(User user) {
     String encodedPassword = passwordEncoder.encode(user.getPassword());
     UserEntity userEntity =
-        UserEntity.builder().email(user.getEmail()).userName(user.getUserName()).build();
+        UserEntity.builder()
+            .email(user.getEmail())
+            .userName(user.getUserName())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .build();
     userEntity.addCredential(encodedPassword);
     userRepository.save(userEntity);
     return jwtUtil.generateToken(user.getUserName());
   }
 
-  public User getUser(int id) throws Exception {
-    Optional<UserEntity> user = userRepository.findById(id);
-    if (user.isPresent()) {
-      return buildUser(user.get());
+  /**
+   * Get user
+   *
+   * @param userName userName
+   * @return User
+   * @throws Exception exception
+   */
+  public UserDetails getUser(String userName) throws Exception {
+    UserEntity user = userRepository.findByUserName(userName);
+    if (user != null) {
+      return buildUser(user);
     } else {
       throw new Exception("User no Found");
     }
   }
 
-  private User buildUser(UserEntity user) {
-    return User.builder()
+  /**
+   * Build the user
+   *
+   * @param user user
+   * @return User
+   */
+  private UserDetails buildUser(UserEntity user) {
+    return UserDetails.builder()
         .email(user.getEmail())
         .id(user.getUserId())
         .userName(user.getUserName())
+        .firstName(user.getFirstName())
+        .lastName(user.getLastName())
         .build();
   }
 }

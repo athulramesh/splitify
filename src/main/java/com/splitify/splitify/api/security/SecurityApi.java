@@ -25,4 +25,6 @@ public interface SecurityApi {
    */
   @PostMapping("/sign-up")
   String signUp(@RequestBody UserDto user);
+
+  class UserDetailsDto {}
 }

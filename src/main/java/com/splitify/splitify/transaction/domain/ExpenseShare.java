@@ -19,12 +19,22 @@ public class ExpenseShare {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(name = "EXPENSESHAREID")
   private Integer expenseShareId;
 
+  @Column(name = "OWNEDBY")
   private Integer owedBy;
+
+  @Column(name = "AMOUNT")
   private BigDecimal amount;
+
+  @Column(name = "SETTLEDAMOUNT")
   private BigDecimal settledAmount;
+
+  @Column(name = "PAIDDATE")
   private Calendar paidDate;
+
+  @Column(name = "STATUS")
   private String status;
 
   @ManyToOne(fetch = FetchType.LAZY)

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -19,14 +20,28 @@ public class Expense {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(name = "EXPENSEID")
   private Integer expenseId;
 
+  @Column(name = "EXPENSENAME")
   private String expenseName;
+
+  @Column(name = "GROUPID")
   private Integer groupId;
+
+  @Column(name = "AMOUNT")
   private BigDecimal amount;
+
+  @Column(name = "STATUS")
   private String status;
+
+  @Column(name = "ONDATE")
   private Calendar onDate;
+
+  @Column(name = "PAIDBY")
   private Integer paidBy;
+
+  @Column(name = "CREATEDBY")
   private Integer createdBy;
 
   @OneToMany(
@@ -34,5 +49,5 @@ public class Expense {
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private ExpenseShare expenseShare;
+  private List<ExpenseShare> expenseShare;
 }

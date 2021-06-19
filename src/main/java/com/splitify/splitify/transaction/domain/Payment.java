@@ -19,12 +19,24 @@ public class Payment {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(name = "PAYMENTID")
   private Integer paymentId;
 
+  @Column(name = "FROMID")
   private Integer fromId;
+
+  @Column(name = "TOID")
   private Integer toId;
+
+  @Column(name = "AMOUNT")
   private BigDecimal amount;
+
+  @Column(name = "ONDATE")
   private Calendar onDate;
+
+  @Column(name = "CREATEDBY")
   private Integer createdBy;
+
+  @Column(name = "GROUPID")
   private Integer groupId;
 }

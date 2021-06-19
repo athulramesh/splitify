@@ -1,16 +1,18 @@
-package com.splitify.splitify.api.security.dto;
+package com.splitify.splitify.security.service;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDto {
+@Builder
+public class UserDetails {
+  private int id;
   private String userName;
+  private String email;
   private String firstName;
   private String lastName;
-  private String password;
-  private String email;
 }

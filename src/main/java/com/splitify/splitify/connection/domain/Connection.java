@@ -12,18 +12,30 @@ import java.util.Calendar;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "CONNECTIONS")
+@Table(name = "CONNECTION")
 @Builder
 public class Connection {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(name = "CONNECTIONID")
   private Integer connectionId;
 
+  @Column(name = "CONNECTIONFROMID")
   private Integer connectionFromId;
+
+  @Column(name = "CONNECTIONTOID")
   private Integer connectionToId;
+
+  @Column(name = "STATUS")
   private String status;
+
+  @Column(name = "APPROVALDATE")
   private Calendar approvalDate;
+
+  @Column(name = "CANCELLEDDATE")
   private Calendar cancelledDate;
+
+  @Column(name = "REJECTEDDATE")
   private Calendar rejectedDate;
 }
