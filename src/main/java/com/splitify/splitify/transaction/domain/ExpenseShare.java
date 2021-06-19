@@ -17,16 +17,17 @@ import java.util.Calendar;
 @Builder
 public class ExpenseShare {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer expenseShareId;
-    private Integer owedBy;
-    private BigDecimal amount;
-    private BigDecimal settledAmount;
-    private Calendar paidDate;
-    private String status;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer expenseShareId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EXPENSEID", nullable = false)
-    private Expense expense;
+  private Integer owedBy;
+  private BigDecimal amount;
+  private BigDecimal settledAmount;
+  private Calendar paidDate;
+  private String status;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "EXPENSEID", nullable = false)
+  private Expense expense;
 }

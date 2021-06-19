@@ -14,48 +14,46 @@ import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private JwtUtil jwtUtil;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    CustomUserDetailsService userDetailsService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired CustomUserDetailsService userDetailsService;
+  @Autowired private UserRepository userRepository;
+  @Autowired private JwtUtil jwtUtil;
+  @Autowired private AuthenticationManager authenticationManager;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-    public String signIn(AuthRequest authRequest) throws Exception {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(authRequest.getUserName(), authRequest.getPassword())
-            );
-        } catch (Exception ex) {
-            throw new Exception("invalid username/password");
-        }
-        return jwtUtil.generateToken(authRequest.getUserName());
+  public String signIn(AuthRequest authRequest) throws Exception {
+    try {
+      authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(
+              authRequest.getUserName(), authRequest.getPassword()));
+    } catch (Exception ex) {
+      throw new Exception("invalid username/password");
     }
+    return jwtUtil.generateToken(authRequest.getUserName());
+  }
 
+  public String signUp(User user) {
+    String encodedPassword = passwordEncoder.encode(user.getPassword());
+    UserEntity userEntity =
+        UserEntity.builder().email(user.getEmail()).userName(user.getUserName()).build();
+    userEntity.addCredential(encodedPassword);
+    userRepository.save(userEntity);
+    return jwtUtil.generateToken(user.getUserName());
+  }
 
-    public String signUp(User user) {
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        UserEntity userEntity = UserEntity.builder().email(user.getEmail()).userName(user.getUserName()).build();
-        userEntity.addCredential(encodedPassword);
-        userRepository.save(userEntity);
-        return jwtUtil.generateToken(user.getUserName());
+  public User getUser(int id) throws Exception {
+    Optional<UserEntity> user = userRepository.findById(id);
+    if (user.isPresent()) {
+      return buildUser(user.get());
+    } else {
+      throw new Exception("User no Found");
     }
+  }
 
-    public User getUser(int id) throws Exception {
-        Optional<UserEntity> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return buildUser(user.get());
-        } else {
-            throw new Exception("User no Found");
-        }
-
-    }
-
-    private User buildUser(UserEntity user) {
-        return User.builder().email(user.getEmail()).id(user.getUserId()).userName(user.getUserName()).build();
-    }
+  private User buildUser(UserEntity user) {
+    return User.builder()
+        .email(user.getEmail())
+        .id(user.getUserId())
+        .userName(user.getUserName())
+        .build();
+  }
 }

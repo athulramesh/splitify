@@ -14,17 +14,23 @@ import javax.persistence.*;
 @Table(name = "USER")
 @Builder
 public class UserEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer userId;
-    private String userName;
-    private String firstName;
-    private String lastName;
-    private String email;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Credential credential;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer userId;
 
-    public void addCredential(String password) {
-        setCredential(Credential.builder().user(this).password(password).build());
-    }
+  private String userName;
+  private String firstName;
+  private String lastName;
+  private String email;
+
+  @OneToOne(
+      mappedBy = "user",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private Credential credential;
+
+  public void addCredential(String password) {
+    setCredential(Credential.builder().user(this).password(password).build());
+  }
 }

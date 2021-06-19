@@ -11,15 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserApiImpl implements UserApi {
 
+  @Autowired private UserService userService;
 
-    @Autowired
-    private UserService userService;
+  @Autowired private SecurityAssembler assembler;
 
-    @Autowired
-    private SecurityAssembler assembler;
-
-    @Override
-    public UserDto getUser(int id) throws Exception {
-        return assembler.assembleUserDetails(userService.getUser(id));
-    }
+  @Override
+  public UserDto getUser(int id) throws Exception {
+    return assembler.assembleUserDetails(userService.getUser(id));
+  }
 }

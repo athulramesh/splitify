@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Calendar;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -17,14 +16,14 @@ import java.util.Date;
 @Builder
 public class Connection {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer connectionId;
-    private Integer connectionFromId;
-    private Integer connectionToId;
-    private String status;
-    private Calendar approvalDate;
-    private Calendar cancelledDate;
-    private Calendar rejectedDate;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  private Integer connectionId;
 
+  private Integer connectionFromId;
+  private Integer connectionToId;
+  private String status;
+  private Calendar approvalDate;
+  private Calendar cancelledDate;
+  private Calendar rejectedDate;
 }

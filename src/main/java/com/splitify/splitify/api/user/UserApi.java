@@ -9,6 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/users")
 public interface UserApi {
-    @GetMapping("/{id}")
-    UserDto getUser(@PathVariable int id) throws Exception;
+  @GetMapping("/{id}")
+  UserDto getUser(@PathVariable int id) throws Exception;
 }

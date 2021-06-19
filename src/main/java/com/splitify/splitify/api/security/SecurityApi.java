@@ -8,21 +8,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public interface SecurityApi {
-    /**
-     * Sign in
-     *
-     * @param authRequest authRequest
-     * @return jwt
-     */
-    @PostMapping("/sign-in")
-    String signIn(@RequestBody AuthRequestDto authRequest) throws Exception;
+  /**
+   * Sign in
+   *
+   * @param authRequest authRequest
+   * @return jwt
+   */
+  @PostMapping("/sign-in")
+  String signIn(@RequestBody AuthRequestDto authRequest) throws Exception;
 
-    /**
-     * Sign in
-     *
-     * @param user UserDto
-     * @return jwt
-     */
-    @PostMapping("/sign-up")
-    String signUp(@RequestBody UserDto user);
+  /**
+   * Sign in
+   *
+   * @param user UserDto
+   * @return jwt
+   */
+  @PostMapping("/sign-up")
+  String signUp(@RequestBody UserDto user);
 }
