@@ -43,7 +43,7 @@ public class ConnectionService {
                 type.getCode(), userId, userId);
 
     connectionEntityList.forEach(
-            connectionEntity -> {
+        connectionEntity -> {
           try {
             Integer friendId =
                 connectionEntity.getConnectionFromId().compareTo(userId) == 0

@@ -18,7 +18,7 @@ import java.util.Calendar;
 public class PaymentEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "PAYMENTID")
   private Integer paymentId;
 
@@ -40,5 +40,3 @@ public class PaymentEntity {
   @Column(name = "GROUPID")
   private Integer groupId;
 }
-// eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhdGgiLCJleHAiOjE2MjQyMTA2OTMsImlhdCI6MTYyNDE3NDY5M30.Hh1QnYRSBvxxkLN-xRtL9qz4tph3povBp2Lm8sb80qY
-// eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhbWV5IiwiZXhwIjoxNjI0MjEwNzcyLCJpYXQiOjE2MjQxNzQ3NzJ9.-3zShw_0jphG9hI9_sBbVilNJqzzEtt_Og6fnYyk-C0

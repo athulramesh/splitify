@@ -17,7 +17,7 @@ import java.util.Calendar;
 public class ConnectionEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "CONNECTIONID")
   private Integer connectionId;
 

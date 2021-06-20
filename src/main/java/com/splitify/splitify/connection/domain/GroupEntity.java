@@ -20,7 +20,7 @@ import java.util.List;
 public class GroupEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "GROUPID")
   private Integer groupId;
 

@@ -15,13 +15,14 @@ import javax.persistence.*;
 @Builder
 public class CredentialEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "CREDENTIALID")
   private int credentialId;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "USERID", nullable = false)
   private UserEntity user;
+
   @Column(name = "PASSWORD")
   private String password;
 }

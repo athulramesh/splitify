@@ -13,12 +13,12 @@ import java.util.Calendar;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "EXPENSE_SHARE")
+@Table(name = "EXPENSESHARE")
 @Builder
 public class ExpenseShareEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "EXPENSESHAREID")
   private Integer expenseShareId;
 

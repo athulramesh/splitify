@@ -19,7 +19,7 @@ import java.util.List;
 public class ExpenseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "EXPENSEID")
   private Integer expenseId;
 

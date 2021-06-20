@@ -16,7 +16,7 @@ import javax.persistence.*;
 public class GroupMemberEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "GROUPMEMBERID")
   private Integer groupMemberId;
 

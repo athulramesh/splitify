@@ -15,15 +15,19 @@ import javax.persistence.*;
 @Builder
 public class UserEntity {
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @GeneratedValue(strategy = GenerationType.AUTO)
   @Column(name = "USERID")
   private Integer userId;
+
   @Column(name = "USERNAME")
   private String userName;
+
   @Column(name = "FIRSTNAME")
   private String firstName;
+
   @Column(name = "LASTNAME")
   private String lastName;
+
   @Column(name = "EMAIL")
   private String email;
 
