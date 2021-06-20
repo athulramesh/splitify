@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum GroupMemberStatus {
-    ACTIVE(0),
-    REMOVED(1);
+  ACTIVE(0),
+  REMOVED(1);
 
   private int code;
 

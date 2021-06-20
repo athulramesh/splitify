@@ -8,7 +8,10 @@ import java.util.List;
 
 @Repository
 public interface ConnectionRepository extends JpaRepository<Connection, Integer> {
-  List<Connection> findByStatusAndConnectionToIdOrConnectionFromId( Integer type,Integer connectionToId,Integer connectionFromId);
+  List<Connection> findByStatusAndConnectionToIdOrConnectionFromId(
+      Integer type, Integer connectionToId, Integer connectionFromId);
+
+  List<Connection> findByConnectionToIdAndStatus(Integer connectionToId, Integer type);
 
   Connection findByConnectionId(Integer connectionId);
 }

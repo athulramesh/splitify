@@ -36,31 +36,35 @@ public class ConnectionService {
 
   public List<ConnectionDetails> fetchConnectionRequests(Integer userId, ConnectionStatus type) {
     List<ConnectionDetails> connectionDetailsList = new ArrayList<>();
-    connectionRepository
-        .findByStatusAndConnectionToIdOrConnectionFromId(type.getCode(), userId, userId)
-        .forEach(
-            connection -> {
-              try {
-                Integer friendId =
-                    connection.getConnectionFromId().compareTo(userId) == 0
-                        ? connection.getConnectionToId()
-                        : connection.getConnectionFromId();
-                UserEntity friend = findUserById(friendId);
-                if (friend != null) {
-                  connectionDetailsList.add(
-                      ConnectionDetails.builder()
-                          .fromId(friendId)
-                          .userName(friend.getUserName())
-                          .firstName(friend.getFirstName())
-                          .lastName(friend.getLastName())
-                          .requestDate(connection.getRequestDate())
-                          .connectionId(connection.getConnectionId())
-                          .build());
-                }
-              } catch (Exception e) {
-                e.printStackTrace();
-              }
-            });
+    List<Connection> connectionList =
+        type == ConnectionStatus.NEW
+            ? connectionRepository.findByConnectionToIdAndStatus(userId, type.getCode())
+            : connectionRepository.findByStatusAndConnectionToIdOrConnectionFromId(
+                type.getCode(), userId, userId);
+
+    connectionList.forEach(
+        connection -> {
+          try {
+            Integer friendId =
+                connection.getConnectionFromId().compareTo(userId) == 0
+                    ? connection.getConnectionToId()
+                    : connection.getConnectionFromId();
+            UserEntity friend = findUserById(friendId);
+            if (friend != null) {
+              connectionDetailsList.add(
+                  ConnectionDetails.builder()
+                      .fromId(friendId)
+                      .userName(friend.getUserName())
+                      .firstName(friend.getFirstName())
+                      .lastName(friend.getLastName())
+                      .requestDate(connection.getRequestDate())
+                      .connectionId(connection.getConnectionId())
+                      .build());
+            }
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
+        });
     return (connectionDetailsList);
   }
 
