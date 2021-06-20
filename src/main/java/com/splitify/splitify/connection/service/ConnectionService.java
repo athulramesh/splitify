@@ -1,7 +1,7 @@
 package com.splitify.splitify.connection.service;
 
 import com.splitify.splitify.api.connection.dto.ConnectionIdDto;
-import com.splitify.splitify.connection.domain.Connection;
+import com.splitify.splitify.connection.domain.ConnectionEntity;
 import com.splitify.splitify.connection.enums.ConnectionStatus;
 import com.splitify.splitify.connection.repository.ConnectionRepository;
 import com.splitify.splitify.security.domain.UserEntity;
@@ -20,8 +20,8 @@ public class ConnectionService {
   @Autowired UserRepository userRepository;
 
   public Integer sendConnectionRequest(Integer fromUserId, TargetUser targetUser) {
-    Connection connection =
-        Connection.builder()
+    ConnectionEntity connectionEntity =
+        ConnectionEntity.builder()
             .connectionFromId(fromUserId)
             .connectionToId(targetUser.getTargetUserId())
             .status(ConnectionStatus.NEW.getCode())
@@ -30,25 +30,25 @@ public class ConnectionService {
             .cancelledDate(null)
             .rejectedDate(null)
             .build();
-    connectionRepository.save(connection);
-    return connection.getConnectionId();
+    connectionRepository.save(connectionEntity);
+    return connectionEntity.getConnectionId();
   }
 
   public List<ConnectionDetails> fetchConnectionRequests(Integer userId, ConnectionStatus type) {
     List<ConnectionDetails> connectionDetailsList = new ArrayList<>();
-    List<Connection> connectionList =
+    List<ConnectionEntity> connectionEntityList =
         type == ConnectionStatus.NEW
             ? connectionRepository.findByConnectionToIdAndStatus(userId, type.getCode())
             : connectionRepository.findByStatusAndConnectionToIdOrConnectionFromId(
                 type.getCode(), userId, userId);
 
-    connectionList.forEach(
-        connection -> {
+    connectionEntityList.forEach(
+            connectionEntity -> {
           try {
             Integer friendId =
-                connection.getConnectionFromId().compareTo(userId) == 0
-                    ? connection.getConnectionToId()
-                    : connection.getConnectionFromId();
+                connectionEntity.getConnectionFromId().compareTo(userId) == 0
+                    ? connectionEntity.getConnectionToId()
+                    : connectionEntity.getConnectionFromId();
             UserEntity friend = findUserById(friendId);
             if (friend != null) {
               connectionDetailsList.add(
@@ -57,8 +57,8 @@ public class ConnectionService {
                       .userName(friend.getUserName())
                       .firstName(friend.getFirstName())
                       .lastName(friend.getLastName())
-                      .requestDate(connection.getRequestDate())
-                      .connectionId(connection.getConnectionId())
+                      .requestDate(connectionEntity.getRequestDate())
+                      .connectionId(connectionEntity.getConnectionId())
                       .build());
             }
           } catch (Exception e) {
@@ -73,20 +73,20 @@ public class ConnectionService {
   }
 
   public String acceptConnectionRequest(ConnectionIdDto connectionIdDto) {
-    Connection connectionRequest =
+    ConnectionEntity connectionEntityRequest =
         connectionRepository.findByConnectionId(connectionIdDto.getConnectionId());
-    connectionRequest.setStatus(ConnectionStatus.ACTIVE.getCode());
-    connectionRequest.setApprovalDate(Calendar.getInstance());
-    connectionRepository.save(connectionRequest);
+    connectionEntityRequest.setStatus(ConnectionStatus.ACTIVE.getCode());
+    connectionEntityRequest.setApprovalDate(Calendar.getInstance());
+    connectionRepository.save(connectionEntityRequest);
     return "Success";
   }
 
   public String rejectConnectionRequest(ConnectionIdDto connectionIdDto) {
-    Connection connectionRequest =
+    ConnectionEntity connectionEntityRequest =
         connectionRepository.findByConnectionId(connectionIdDto.getConnectionId());
-    connectionRequest.setStatus(ConnectionStatus.REJECTED.getCode());
-    connectionRequest.setRejectedDate(Calendar.getInstance());
-    connectionRepository.save(connectionRequest);
+    connectionEntityRequest.setStatus(ConnectionStatus.REJECTED.getCode());
+    connectionEntityRequest.setRejectedDate(Calendar.getInstance());
+    connectionRepository.save(connectionEntityRequest);
     return "Success";
   }
 }

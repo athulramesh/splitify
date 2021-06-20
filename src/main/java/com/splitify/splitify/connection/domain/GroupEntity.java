@@ -17,7 +17,7 @@ import java.util.List;
 @Entity
 @Table(name = "T_GROUP")
 @Builder
-public class Group {
+public class GroupEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -38,14 +38,14 @@ public class Group {
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<GroupMember> groupMember;
+  private List<GroupMemberEntity> groupMember;
 
   public void addGroupMember(Integer createdBy) {
     if (CollectionUtils.isEmpty(groupMember)) {
       groupMember = new ArrayList<>();
     }
     groupMember.add(
-        GroupMember.builder()
+        GroupMemberEntity.builder()
             .group(this)
             .userId(createdBy)
             .status(GroupMemberStatus.ACTIVE.getCode())

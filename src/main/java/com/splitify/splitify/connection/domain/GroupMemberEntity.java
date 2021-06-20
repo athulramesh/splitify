@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "GROUPMEMBER")
 @Builder
-public class GroupMember {
+public class GroupMemberEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -25,7 +25,7 @@ public class GroupMember {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "GROUPID", nullable = false)
-  private Group group;
+  private GroupEntity group;
 
   @Column(name = "STATUS")
   private Integer status;

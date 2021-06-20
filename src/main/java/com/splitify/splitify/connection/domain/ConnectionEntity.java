@@ -14,7 +14,7 @@ import java.util.Calendar;
 @Entity
 @Table(name = "CONNECTION")
 @Builder
-public class Connection {
+public class ConnectionEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)

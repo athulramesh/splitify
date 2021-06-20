@@ -28,9 +28,9 @@ public class UserEntity {
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private Credential credential;
+  private CredentialEntity credential;
 
   public void addCredential(String password) {
-    setCredential(Credential.builder().user(this).password(password).build());
+    setCredential(CredentialEntity.builder().user(this).password(password).build());
   }
 }

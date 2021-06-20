@@ -1,17 +1,17 @@
 package com.splitify.splitify.connection.repository;
 
-import com.splitify.splitify.connection.domain.Connection;
+import com.splitify.splitify.connection.domain.ConnectionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ConnectionRepository extends JpaRepository<Connection, Integer> {
-  List<Connection> findByStatusAndConnectionToIdOrConnectionFromId(
+public interface ConnectionRepository extends JpaRepository<ConnectionEntity, Integer> {
+  List<ConnectionEntity> findByStatusAndConnectionToIdOrConnectionFromId(
       Integer type, Integer connectionToId, Integer connectionFromId);
 
-  List<Connection> findByConnectionToIdAndStatus(Integer connectionToId, Integer type);
+  List<ConnectionEntity> findByConnectionToIdAndStatus(Integer connectionToId, Integer type);
 
-  Connection findByConnectionId(Integer connectionId);
+  ConnectionEntity findByConnectionId(Integer connectionId);
 }

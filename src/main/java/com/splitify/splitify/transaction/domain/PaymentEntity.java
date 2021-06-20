@@ -15,7 +15,7 @@ import java.util.Calendar;
 @Entity
 @Table(name = "PAYMENT")
 @Builder
-public class Payment {
+public class PaymentEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)

@@ -15,7 +15,7 @@ import java.util.Calendar;
 @Entity
 @Table(name = "EXPENSE_SHARE")
 @Builder
-public class ExpenseShare {
+public class ExpenseShareEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -39,5 +39,5 @@ public class ExpenseShare {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EXPENSEID", nullable = false)
-  private Expense expense;
+  private ExpenseEntity expense;
 }

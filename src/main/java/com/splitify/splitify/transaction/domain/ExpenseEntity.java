@@ -16,7 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "EXPENSE")
 @Builder
-public class Expense {
+public class ExpenseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -49,5 +49,5 @@ public class Expense {
       cascade = CascadeType.ALL,
       orphanRemoval = true,
       fetch = FetchType.LAZY)
-  private List<ExpenseShare> expenseShare;
+  private List<ExpenseShareEntity> expenseShare;
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "CREDENTIAL")
 @Builder
-public class Credential {
+public class CredentialEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private int credentialId;
