@@ -16,11 +16,12 @@ import javax.persistence.*;
 public class CredentialEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Column(name = "CREDENTIALID")
   private int credentialId;
 
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "USERID", nullable = false)
   private UserEntity user;
-
+  @Column(name = "PASSWORD")
   private String password;
 }
