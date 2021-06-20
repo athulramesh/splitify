@@ -21,7 +21,7 @@ public class SecurityApiImpl implements SecurityApi {
    * @return jwt
    */
   @Override
-  public String signIn(AuthRequestDto authRequest) throws Exception {
+  public String signIn(AuthRequestDto authRequest) {
     return userService.signIn(assembler.assembleAuthRequest(authRequest));
   }
 

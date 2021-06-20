@@ -1,5 +1,7 @@
 package com.splitify.splitify.security.service;
 
+import com.splitify.splitify.common.exception.ExceptionUtils;
+import com.splitify.splitify.security.SecurityConstants;
 import com.splitify.splitify.security.domain.AuthRequest;
 import com.splitify.splitify.security.domain.UserEntity;
 import com.splitify.splitify.security.repository.UserRepository;
@@ -17,21 +19,21 @@ public class UserService {
   @Autowired private JwtUtil jwtUtil;
   @Autowired private AuthenticationManager authenticationManager;
   @Autowired private PasswordEncoder passwordEncoder;
+  @Autowired private ExceptionUtils exception;
 
   /**
    * sign in
    *
    * @param authRequest authRequest
    * @return JWT token
-   * @throws Exception exception
    */
-  public String signIn(AuthRequest authRequest) throws Exception {
+  public String signIn(AuthRequest authRequest) {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
               authRequest.getUserName(), authRequest.getPassword()));
     } catch (Exception ex) {
-      throw new Exception("invalid username/password");
+      exception.throwBadRequestException(SecurityConstants.INVALID_CREDENTIALS);
     }
     return jwtUtil.generateToken(authRequest.getUserName());
   }
@@ -68,7 +70,7 @@ public class UserService {
     if (user != null) {
       return buildUser(user);
     } else {
-      throw new Exception("User no Found");
+      throw new Exception(SecurityConstants.USER_NOT_FOUND);
     }
   }
 

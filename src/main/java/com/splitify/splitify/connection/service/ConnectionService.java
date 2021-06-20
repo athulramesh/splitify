@@ -20,18 +20,18 @@ public class ConnectionService {
   @Autowired UserRepository userRepository;
 
   public Integer sendConnectionRequest(Integer fromUserId, TargetUser targetUser) {
-    ConnectionEntity connectionEntity =
-        ConnectionEntity.builder()
-            .connectionFromId(fromUserId)
-            .connectionToId(targetUser.getTargetUserId())
-            .status(ConnectionStatus.NEW.getCode())
-            .requestDate(Calendar.getInstance())
-            .approvalDate(null)
-            .cancelledDate(null)
-            .rejectedDate(null)
-            .build();
-    connectionRepository.save(connectionEntity);
-    return connectionEntity.getConnectionId();
+    if (targetUser != null && targetUser.getTargetUserId() != null) {
+      ConnectionEntity connectionEntity =
+          ConnectionEntity.builder()
+              .connectionFromId(fromUserId)
+              .connectionToId(targetUser.getTargetUserId())
+              .status(ConnectionStatus.NEW.getCode())
+              .requestDate(Calendar.getInstance())
+              .build();
+      connectionRepository.save(connectionEntity);
+      return connectionEntity.getConnectionId();
+    }
+    return null;
   }
 
   public List<ConnectionDetails> fetchConnectionRequests(Integer userId, ConnectionStatus type) {
