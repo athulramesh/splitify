@@ -35,7 +35,7 @@ public class ExpenseShare {
   private Calendar paidDate;
 
   @Column(name = "STATUS")
-  private String status;
+  private Integer status;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EXPENSEID", nullable = false)

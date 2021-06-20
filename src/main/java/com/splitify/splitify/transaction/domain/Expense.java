@@ -33,7 +33,7 @@ public class Expense {
   private BigDecimal amount;
 
   @Column(name = "STATUS")
-  private String status;
+  private Integer status;
 
   @Column(name = "ONDATE")
   private Calendar onDate;

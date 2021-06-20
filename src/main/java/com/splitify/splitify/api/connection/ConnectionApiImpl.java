@@ -3,6 +3,7 @@ package com.splitify.splitify.api.connection;
 import com.splitify.splitify.api.connection.assembler.ConnectionAssembler;
 import com.splitify.splitify.api.connection.dto.ConnectionIdDto;
 import com.splitify.splitify.api.connection.dto.TargetUserDto;
+import com.splitify.splitify.connection.enums.ConnectionStatus;
 import com.splitify.splitify.connection.service.ConnectionDetails;
 import com.splitify.splitify.connection.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,7 @@ public class ConnectionApiImpl implements ConnectionApi {
   }
 
   @Override
-  public List<ConnectionDetails> fetchConnectionRequests(Integer userId, String type)
-      throws Exception {
+  public List<ConnectionDetails> fetchConnectionRequests(Integer userId, ConnectionStatus type) {
 
     return connectionService.fetchConnectionRequests(userId, type);
   }

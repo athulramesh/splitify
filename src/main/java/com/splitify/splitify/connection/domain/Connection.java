@@ -28,7 +28,7 @@ public class Connection {
   private Integer connectionToId;
 
   @Column(name = "STATUS")
-  private String status;
+  private Integer status;
 
   @Column(name = "REQUESTDATE")
   private Calendar requestDate;

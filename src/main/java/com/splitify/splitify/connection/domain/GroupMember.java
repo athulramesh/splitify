@@ -28,5 +28,5 @@ public class GroupMember {
   private Group group;
 
   @Column(name = "STATUS")
-  private String status;
+  private Integer status;
 }

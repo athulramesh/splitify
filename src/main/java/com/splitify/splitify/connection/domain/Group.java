@@ -1,5 +1,6 @@
 package com.splitify.splitify.connection.domain;
 
+import com.splitify.splitify.connection.enums.GroupMemberStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,7 @@ public class Group {
   private Integer createdBy;
 
   @Column(name = "STATUS")
-  private String status;
+  private Integer status;
 
   @OneToMany(
       mappedBy = "group",
@@ -43,6 +44,11 @@ public class Group {
     if (CollectionUtils.isEmpty(groupMember)) {
       groupMember = new ArrayList<>();
     }
-    groupMember.add(GroupMember.builder().group(this).userId(createdBy).status("NEW").build());
+    groupMember.add(
+        GroupMember.builder()
+            .group(this)
+            .userId(createdBy)
+            .status(GroupMemberStatus.ACTIVE.getCode())
+            .build());
   }
 }
