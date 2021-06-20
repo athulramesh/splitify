@@ -37,6 +37,9 @@ public class ExpenseShareEntity {
   @Column(name = "STATUS")
   private Integer status;
 
+  @Column(name = "PAYMENTSTATUS")
+  private Integer paymentStatus;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EXPENSEID", nullable = false)
   private ExpenseEntity expense;

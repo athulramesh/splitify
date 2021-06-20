@@ -5,9 +5,10 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-public enum ExpenseStatus {
-  ACTIVE(0),
-  CANCELLED(1);
+public enum ExpenseSharePaymentStatus {
+  SETTLED(0),
+  PARTIALLY_SETTLED(1),
+  UNSETTLED(2);
 
   private int code;
 

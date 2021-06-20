@@ -75,6 +75,16 @@ public class UserService {
   }
 
   /**
+   * get user Entity
+   *
+   * @param id id
+   * @return User entity.
+   */
+  private UserEntity getUserEntity(Integer id) {
+    return userRepository.findById(id).orElse(null);
+  }
+
+  /**
    * Build the user
    *
    * @param user user
@@ -88,5 +98,19 @@ public class UserService {
         .firstName(user.getFirstName())
         .lastName(user.getLastName())
         .build();
+  }
+
+  /**
+   * Get user By id
+   *
+   * @param id id
+   * @return user Details
+   */
+  public UserDetails getUserById(Integer id) {
+    UserEntity userEntity = getUserEntity(id);
+    if (userEntity != null) {
+      return buildUser(userEntity);
+    }
+    return null;
   }
 }
