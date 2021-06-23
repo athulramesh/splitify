@@ -4,6 +4,7 @@ import com.splitify.splitify.transaction.enums.ExpenseSharePaymentStatus;
 import com.splitify.splitify.transaction.enums.ExpenseShareStatus;
 import com.splitify.splitify.transaction.enums.ExpenseStatus;
 import com.splitify.splitify.transaction.service.ExpenseRequest;
+import com.splitify.splitify.transaction.service.PaymentShareVo;
 import com.splitify.splitify.transaction.service.ShareDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -137,5 +138,60 @@ public class ExpenseEntity {
   public void delete() {
     setStatus(ExpenseStatus.CANCELLED.getCode());
     expenseShare.forEach(expense -> expense.setStatus(ExpenseShareStatus.CANCELLED.getCode()));
+  }
+
+  /**
+   * updates the expense share amount
+   *
+   * @param receivedBy receivedBy
+   * @param amount amount
+   * @param paymentShareVos paymentShareVos
+   * @return amount
+   */
+  public BigDecimal updateExpenseShareAmount(
+      Integer receivedBy, BigDecimal amount, List<PaymentShareVo> paymentShareVos) {
+    for (ExpenseShareEntity share : expenseShare) {
+      if (share.getOwedBy().equals(receivedBy)
+          && share.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
+        BigDecimal remainingAmount = share.getRemainingAmount();
+        if (amount.compareTo(remainingAmount) >= 0) {
+          share.setSettledAmount(share.getAmount());
+          share.setPaymentStatus(ExpenseSharePaymentStatus.SETTLED.getCode());
+        } else {
+          share.setSettledAmount(share.getSettledAmount().add(amount));
+          share.setPaymentStatus(ExpenseSharePaymentStatus.PARTIALLY_SETTLED.getCode());
+        }
+        paymentShareVos.add(
+            PaymentShareVo.builder()
+                .expenseId(getExpenseId())
+                .expenseShareId(share.getExpenseShareId())
+                .amount(remainingAmount)
+                .build());
+        amount = amount.subtract(remainingAmount);
+      }
+      if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+        break;
+      }
+    }
+    return amount;
+  }
+
+  /**
+   * Update expense share deduction
+   *
+   * @param share share
+   */
+  public void updateExpenseShareDeduction(PaymentShareVo share) {
+    expenseShare.forEach(
+        expense -> {
+          if (expense.getExpenseShareId().equals(share.getExpenseShareId())) {
+            expense.setSettledAmount(expense.getSettledAmount().subtract(share.getAmount()));
+            if (expense.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
+              expense.setPaymentStatus(ExpenseSharePaymentStatus.PARTIALLY_SETTLED.getCode());
+            } else {
+              expense.setPaymentStatus(ExpenseSharePaymentStatus.UNSETTLED.getCode());
+            }
+          }
+        });
   }
 }

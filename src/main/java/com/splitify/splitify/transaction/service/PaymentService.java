@@ -7,11 +7,14 @@ import com.splitify.splitify.transaction.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /** The Expense service. */
 @Service
 public class PaymentService {
   @Autowired private PaymentRepository repository;
   @Autowired private UserService userService;
+  @Autowired private ExpenseService expenseService;
 
   /**
    * Records the expense
@@ -31,7 +34,13 @@ public class PaymentService {
               .onDate(paymentRequest.getOnDate())
               .status(PaymentStatus.ACTIVE.getCode())
               .build();
-
+      List<PaymentShareVo> shareVos =
+          expenseService.settleExpense(
+              paymentRequest.getGroupId(),
+              paymentRequest.getPaidBy(),
+              paymentRequest.getReceivedBy(),
+              paymentRequest.getAmount());
+      paymentEntity.addPaymentShare(shareVos);
       return repository.save(paymentEntity).getPaymentId();
     }
     return null;
@@ -47,7 +56,21 @@ public class PaymentService {
   public Integer updatePayment(Integer paymentId, PaymentRequest paymentRequest) {
     PaymentEntity paymentEntity = getPaymentEntity(paymentId);
     if (paymentEntity != null) {
-      paymentEntity.updateExpense(paymentRequest);
+      if (paymentEntity.getAmount().compareTo(paymentRequest.getAmount()) > 0) {
+        List<PaymentShareVo> shareVos =
+            paymentEntity.updatePaymentShare(
+                paymentEntity.getAmount().subtract(paymentRequest.getAmount()));
+        expenseService.updatePaymentDeduction(shareVos);
+      } else if (paymentEntity.getAmount().compareTo(paymentRequest.getAmount()) < 0) {
+        List<PaymentShareVo> shareVos =
+            expenseService.settleExpense(
+                paymentRequest.getGroupId(),
+                paymentRequest.getPaidBy(),
+                paymentRequest.getReceivedBy(),
+                paymentRequest.getAmount().subtract(paymentEntity.getAmount()));
+        paymentEntity.addPaymentShare(shareVos);
+      }
+      paymentEntity.updatePayment(paymentRequest);
       repository.save(paymentEntity);
       return paymentEntity.getPaymentId();
     }
@@ -72,6 +95,8 @@ public class PaymentService {
   public void deletePayment(Integer paymentId) {
     PaymentEntity paymentEntity = getPaymentEntity(paymentId);
     if (paymentEntity != null) {
+      List<PaymentShareVo> shareVos = paymentEntity.updatePaymentShare(paymentEntity.getAmount());
+      expenseService.updatePaymentDeduction(shareVos);
       paymentEntity.delete();
       repository.save(paymentEntity);
     }

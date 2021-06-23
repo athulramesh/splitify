@@ -43,4 +43,13 @@ public class ExpenseShareEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "EXPENSEID", nullable = false)
   private ExpenseEntity expense;
+
+  /**
+   * Get the remaining amount
+   *
+   * @return remaining amount
+   */
+  public BigDecimal getRemainingAmount() {
+    return getAmount().subtract(getSettledAmount());
+  }
 }

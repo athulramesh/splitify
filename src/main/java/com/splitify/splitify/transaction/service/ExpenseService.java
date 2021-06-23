@@ -10,6 +10,7 @@ import com.splitify.splitify.transaction.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,5 +135,42 @@ public class ExpenseService {
                     .settledAmount(expenseShareEntity.getSettledAmount())
                     .build()));
     return shareDetailsList;
+  }
+
+  /**
+   * Settle expenses
+   *
+   * @param groupId groupId
+   * @param paidBy paidBy
+   * @param receivedBy receivedBy
+   * @param amount amount
+   * @return PaymentShareVo list
+   */
+  public List<PaymentShareVo> settleExpense(
+      Integer groupId, Integer paidBy, Integer receivedBy, BigDecimal amount) {
+    List<ExpenseEntity> expenseEntities = repository.findByGroupIdAndPaidBy(groupId, paidBy);
+    List<PaymentShareVo> paymentShareVos = new ArrayList<>();
+    for (ExpenseEntity expense : expenseEntities) {
+      if (amount.compareTo(BigDecimal.ZERO) > 0) {
+        amount = expense.updateExpenseShareAmount(receivedBy, amount, paymentShareVos);
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+          break;
+        }
+      }
+    }
+    return paymentShareVos;
+  }
+
+  /**
+   * Update payment deduction
+   *
+   * @param shareVos shareVos
+   */
+  public void updatePaymentDeduction(List<PaymentShareVo> shareVos) {
+    shareVos.forEach(
+        share -> {
+          ExpenseEntity expenseEntity = getExpenseEntity(share.getExpenseId());
+          expenseEntity.updateExpenseShareDeduction(share);
+        });
   }
 }
