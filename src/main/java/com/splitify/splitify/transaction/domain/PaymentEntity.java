@@ -1,5 +1,7 @@
 package com.splitify.splitify.transaction.domain;
 
+import com.splitify.splitify.transaction.enums.PaymentStatus;
+import com.splitify.splitify.transaction.service.PaymentRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,4 +41,25 @@ public class PaymentEntity {
 
   @Column(name = "GROUPID")
   private Integer groupId;
+
+  @Column(name = "STATUS")
+  private Integer status;
+
+  /**
+   * Update payment
+   *
+   * @param paymentRequest paymentRequest
+   */
+  public void updateExpense(PaymentRequest paymentRequest) {
+    setAmount(paymentRequest.getAmount());
+    setFromId(paymentRequest.getPaidBy());
+    setToId(paymentRequest.getReceivedBy());
+    setGroupId(paymentRequest.getGroupId());
+    setOnDate(paymentRequest.getOnDate());
+  }
+
+  /** Cancel the payment */
+  public void delete() {
+    setStatus(PaymentStatus.CANCELLED.getCode());
+  }
 }

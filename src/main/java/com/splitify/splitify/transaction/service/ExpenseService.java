@@ -2,11 +2,11 @@ package com.splitify.splitify.transaction.service;
 
 import com.splitify.splitify.common.exception.ExceptionUtils;
 import com.splitify.splitify.security.service.UserService;
-import com.splitify.splitify.transaction.ExpenseRepository;
 import com.splitify.splitify.transaction.domain.ExpenseEntity;
 import com.splitify.splitify.transaction.domain.ExpenseShareEntity;
 import com.splitify.splitify.transaction.enums.ExpensePaymentStatus;
 import com.splitify.splitify.transaction.enums.ExpenseStatus;
+import com.splitify.splitify.transaction.repository.ExpenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -72,10 +72,16 @@ public class ExpenseService {
     return repository.findById(expenseId).orElse(null);
   }
 
+  /**
+   * Delete expense
+   *
+   * @param expenseId expenseId
+   */
   public void deleteExpense(Integer expenseId) {
     ExpenseEntity expenseEntity = getExpenseEntity(expenseId);
     if (expenseEntity != null) {
       expenseEntity.delete();
+      repository.save(expenseEntity);
     }
   }
 
