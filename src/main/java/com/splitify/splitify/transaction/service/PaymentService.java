@@ -67,10 +67,10 @@ public class PaymentService {
   /**
    * Delete the payment
    *
-   * @param expenseId expenseId
+   * @param paymentId expenseId
    */
-  public void deletePayment(Integer expenseId) {
-    PaymentEntity paymentEntity = getPaymentEntity(expenseId);
+  public void deletePayment(Integer paymentId) {
+    PaymentEntity paymentEntity = getPaymentEntity(paymentId);
     if (paymentEntity != null) {
       paymentEntity.delete();
       repository.save(paymentEntity);
