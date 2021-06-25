@@ -1,13 +1,15 @@
-package com.splitify.splitify.api.connection.dto;
+package com.splitify.splitify.connection.service;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConnectionIdDto {
+@Builder
+public class ConnectionId {
 
   private Integer connectionId;
 }

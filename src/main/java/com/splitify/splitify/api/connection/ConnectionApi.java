@@ -13,7 +13,7 @@ import java.util.List;
 public interface ConnectionApi {
 
   @PostMapping()
-  Integer sendConnectionRequest(
+  ConnectionIdDto sendConnectionRequest(
       @PathVariable("userId") Integer fromUserId, @RequestBody TargetUserDto targetUserDto);
 
   @GetMapping()

@@ -20,9 +20,10 @@ public class ConnectionApiImpl implements ConnectionApi {
   @Autowired ConnectionAssembler connectionAssembler;
 
   @Override
-  public Integer sendConnectionRequest(Integer fromUserId, TargetUserDto targetUserDto) {
-    return connectionService.sendConnectionRequest(
-        fromUserId, connectionAssembler.assembleUserId(targetUserDto));
+  public ConnectionIdDto sendConnectionRequest(Integer fromUserId, TargetUserDto targetUserDto) {
+    return connectionAssembler.assembleConnectionIdDetails(
+        connectionService.sendConnectionRequest(
+            fromUserId, connectionAssembler.assembleUserId(targetUserDto)));
   }
 
   @Override

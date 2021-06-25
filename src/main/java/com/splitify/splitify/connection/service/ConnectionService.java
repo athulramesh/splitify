@@ -19,7 +19,7 @@ public class ConnectionService {
   @Autowired ConnectionRepository connectionRepository;
   @Autowired UserRepository userRepository;
 
-  public Integer sendConnectionRequest(Integer fromUserId, TargetUser targetUser) {
+  public ConnectionId sendConnectionRequest(Integer fromUserId, TargetUser targetUser) {
     if (targetUser != null && targetUser.getTargetUserId() != null) {
       ConnectionEntity connectionEntity =
           ConnectionEntity.builder()
@@ -29,7 +29,7 @@ public class ConnectionService {
               .requestDate(Calendar.getInstance())
               .build();
       connectionRepository.save(connectionEntity);
-      return connectionEntity.getConnectionId();
+      return ConnectionId.builder().connectionId(connectionEntity.getConnectionId()).build();
     }
     return null;
   }
