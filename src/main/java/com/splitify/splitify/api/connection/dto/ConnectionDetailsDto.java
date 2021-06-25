@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConnectionDto {
+public class ConnectionDetailsDto {
   private Integer fromId;
   private String userName;
   private String firstName;

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TargetUserDto {
-
-  private Integer targetUserId;
+public class GroupResponseDto {
+  private Integer groupId;
+  private String successMessage;
 }

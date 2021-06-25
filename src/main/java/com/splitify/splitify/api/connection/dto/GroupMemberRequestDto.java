@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TargetUserDto {
-
-  private Integer targetUserId;
+public class GroupMemberRequestDto {
+  private Integer userId;
 }
