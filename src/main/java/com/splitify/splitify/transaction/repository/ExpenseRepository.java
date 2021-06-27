@@ -5,7 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ExpenseRepository extends JpaRepository<ExpenseEntity, Integer> {
-
+public interface ExpenseRepository
+    extends JpaRepository<ExpenseEntity, Integer>, ExpenseRepositoryCustom {
+  /**
+   * Find by group id and paid by.
+   *
+   * @param groupId groupId
+   * @param paidBy paidBy
+   * @return expense entity
+   */
   List<ExpenseEntity> findByGroupIdAndPaidBy(Integer groupId, Integer paidBy);
 }

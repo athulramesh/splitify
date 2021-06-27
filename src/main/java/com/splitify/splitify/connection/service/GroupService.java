@@ -171,7 +171,8 @@ public class GroupService {
     List<GroupMemberEntity> groupMemberEntityList = groupEntity.getGroupMember();
     groupMemberEntityList.stream()
         .filter(
-            groupMemberEntity -> groupMemberEntity.getUserId() .compareTo(groupMemberRequest.getUserId())==0)
+            groupMemberEntity ->
+                groupMemberEntity.getUserId().compareTo(groupMemberRequest.getUserId()) == 0)
         .collect(Collectors.toList())
         .get(0)
         .setStatus(GroupMemberStatus.REMOVED.getCode());
