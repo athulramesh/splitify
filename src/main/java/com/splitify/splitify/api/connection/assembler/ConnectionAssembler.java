@@ -34,4 +34,8 @@ public class ConnectionAssembler {
       GroupMemberRequestDto groupMemberRequestDto) {
     return modelMapper.map(groupMemberRequestDto, GroupMemberRequest.class);
   }
+
+  public GroupDto assembleGroupDto(Group groups) {
+    return modelMapper.map(groups, GroupDto.class);
+  }
 }

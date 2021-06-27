@@ -1,9 +1,6 @@
 package com.splitify.splitify.api.connection;
 
-import com.splitify.splitify.api.connection.dto.GroupDetailsDto;
-import com.splitify.splitify.api.connection.dto.GroupMemberRequestDto;
-import com.splitify.splitify.api.connection.dto.GroupRequestDto;
-import com.splitify.splitify.api.connection.dto.GroupResponseDto;
+import com.splitify.splitify.api.connection.dto.*;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -29,7 +26,7 @@ public interface GroupApi {
    * @return SuccessMessage
    */
   @PutMapping("{groupId}")
-  GroupResponseDto UpdateGroup(
+  GroupResponseDto updateGroup(
       @PathVariable("groupId") Integer groupId, @RequestBody GroupRequestDto groupRequest);
 
   /**
@@ -39,7 +36,7 @@ public interface GroupApi {
    * @return SuccessMessage
    */
   @PutMapping("{groupId}/delete")
-  GroupResponseDto DeleteGroup(@PathVariable("groupId") Integer groupId);
+  GroupResponseDto deleteGroup(@PathVariable("groupId") Integer groupId);
 
   /**
    * Get group details
@@ -73,4 +70,13 @@ public interface GroupApi {
   GroupResponseDto removeGroupMember(
       @PathVariable("groupId") Integer groupId,
       @RequestBody GroupMemberRequestDto groupMemberRequest);
+
+  /**
+   * Get group details
+   *
+   * @param userId userId
+   * @return GroupDetails
+   */
+  @GetMapping("{userId}/all-groups")
+  GroupDto getAllGroups(@PathVariable("userId") Integer userId);
 }

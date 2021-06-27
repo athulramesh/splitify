@@ -1,10 +1,7 @@
 package com.splitify.splitify.api.connection;
 
 import com.splitify.splitify.api.connection.assembler.ConnectionAssembler;
-import com.splitify.splitify.api.connection.dto.GroupDetailsDto;
-import com.splitify.splitify.api.connection.dto.GroupMemberRequestDto;
-import com.splitify.splitify.api.connection.dto.GroupRequestDto;
-import com.splitify.splitify.api.connection.dto.GroupResponseDto;
+import com.splitify.splitify.api.connection.dto.*;
 import com.splitify.splitify.connection.ConnectionConstants;
 import com.splitify.splitify.connection.service.GroupResponse;
 import com.splitify.splitify.connection.service.GroupService;
@@ -39,7 +36,7 @@ public class GroupApiImpl implements GroupApi {
    * @return SuccessMessage
    */
   @Override
-  public GroupResponseDto UpdateGroup(Integer groupId, GroupRequestDto groupRequest) {
+  public GroupResponseDto updateGroup(Integer groupId, GroupRequestDto groupRequest) {
 
     groupService.updateGroup(groupId, assembler.assembleCreateGroupRequest(groupRequest));
     return assembler.assembleCreateGroupResponse(
@@ -53,8 +50,8 @@ public class GroupApiImpl implements GroupApi {
    * @return SuccessMessage
    */
   @Override
-  public GroupResponseDto DeleteGroup(Integer groupId) {
-    groupService.DeleteGroup(groupId);
+  public GroupResponseDto deleteGroup(Integer groupId) {
+    groupService.deleteGroup(groupId);
     return assembler.assembleCreateGroupResponse(
         GroupResponse.builder().successMessage(ConnectionConstants.SUCCESS_MESSAGE).build());
   }
@@ -99,5 +96,16 @@ public class GroupApiImpl implements GroupApi {
         groupId, assembler.assembleGroupMemberRequest(groupMemberRequest));
     return assembler.assembleCreateGroupResponse(
         GroupResponse.builder().successMessage(ConnectionConstants.SUCCESS_MESSAGE).build());
+  }
+
+  /**
+   * Get group details
+   *
+   * @param userId userId
+   * @return GroupDetails
+   */
+  @Override
+  public GroupDto getAllGroups(Integer userId) {
+    return assembler.assembleGroupDto(groupService.getAllGroups(userId));
   }
 }

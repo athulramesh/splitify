@@ -59,7 +59,6 @@ public class GroupService {
    */
   private GroupEntity getGroupById(Integer id) {
     return groupRepository.findById(id).orElse(null);
-    //    return groupRepository.findById(id).orElseThrow(() -> new Exception("User Not Found"));
   }
 
   /**
@@ -67,7 +66,7 @@ public class GroupService {
    *
    * @param groupId groupId
    */
-  public void DeleteGroup(Integer groupId) {
+  public void deleteGroup(Integer groupId) {
     GroupEntity group = getGroupById(groupId);
     group.setStatus(GroupStatus.DELETED.getCode());
     groupRepository.save(group);
@@ -177,5 +176,26 @@ public class GroupService {
         .get(0)
         .setStatus(GroupMemberStatus.REMOVED.getCode());
     groupRepository.save(groupEntity);
+  }
+
+  /**
+   * Get all groups of user
+   *
+   * @param userId userId
+   * @return all groups
+   */
+  public Group getAllGroups(Integer userId) {
+    List<GroupIdentity> groupIdentities = new ArrayList<>();
+    groupRepository
+        .getAllGroups(userId)
+        .forEach(
+            g -> {
+              groupIdentities.add(
+                  GroupIdentity.builder()
+                      .groupId(g.get(0, Integer.class))
+                      .groupName(g.get(1, String.class))
+                      .build());
+            });
+    return Group.builder().groups(groupIdentities).build();
   }
 }
