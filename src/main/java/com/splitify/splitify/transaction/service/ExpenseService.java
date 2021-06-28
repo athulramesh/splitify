@@ -195,6 +195,7 @@ public class ExpenseService {
         });
     List<Tuple> toTransactions = repository.getTotalPayableAmountPerGroup(fromId);
     Map<Integer, TransactionDto> out = new HashMap<>();
+    Map<Integer, TransactionDto> nonGroup = new HashMap<>();
     toTransactions.forEach(
         t -> {
           Integer groupId = t.get(0, Integer.class);
@@ -216,7 +217,11 @@ public class ExpenseService {
                         .toAmount(BigDecimal.ZERO)
                         .build();
               }
-              out.put(groupId, transactionDto);
+              if (isNonGroup(key)) {
+                nonGroup.put(Integer.valueOf(key.split("-")[1]), transactionDto);
+              } else {
+                out.put(groupId, transactionDto);
+              }
             } else {
               TransactionDto transactionDto;
               if (out.containsKey(groupId)) {
@@ -230,7 +235,11 @@ public class ExpenseService {
                         .toAmount(toAmount.subtract(fromAmount))
                         .build();
               }
-              out.put(groupId, transactionDto);
+              if (isNonGroup(key)) {
+                nonGroup.put(Integer.valueOf(key.split("-")[1]), transactionDto);
+              } else {
+                out.put(groupId, transactionDto);
+              }
             }
             map.remove(key);
           } else {
@@ -242,7 +251,11 @@ public class ExpenseService {
               transactionDto =
                   TransactionDto.builder().fromAmount(BigDecimal.ZERO).toAmount(toAmount).build();
             }
-            out.put(groupId, transactionDto);
+            if (isNonGroup(key)) {
+              nonGroup.put(Integer.valueOf(key.split("-")[1]), transactionDto);
+            } else {
+              out.put(groupId, transactionDto);
+            }
           }
         });
     if (!CollectionUtils.isEmpty(map)) {
@@ -257,10 +270,21 @@ public class ExpenseService {
               transactionDto =
                   TransactionDto.builder().fromAmount(value).toAmount(BigDecimal.ZERO).build();
             }
-            out.put(groupId, transactionDto);
+            if (isNonGroup(key)) {
+              nonGroup.put(Integer.valueOf(key.split("-")[1]), transactionDto);
+            } else {
+              out.put(groupId, transactionDto);
+            }
           });
     }
-    return GroupTransactionDetails.builder().groupTransaction(getGroupTransaction(out)).build();
+    return GroupTransactionDetails.builder()
+        .groupTransaction(getGroupTransaction(out))
+        .nonGroupTransaction(getGroupTransaction(nonGroup))
+        .build();
+  }
+
+  private boolean isNonGroup(String key) {
+    return key.split("-")[0].compareTo("null") == 0;
   }
 
   /**

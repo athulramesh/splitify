@@ -14,4 +14,5 @@ import java.util.List;
 @Builder
 public class GroupTransactionDetails {
   private List<GroupTransaction> groupTransaction;
+  private List<GroupTransaction> nonGroupTransaction;
 }
