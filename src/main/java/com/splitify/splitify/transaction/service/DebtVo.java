@@ -11,7 +11,9 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DueVo {
-  Integer id;
-  BigDecimal amount;
+public class DebtVo {
+  private Integer debtId;
+  private Integer fromId;
+  private Integer toId;
+  private BigDecimal amount;
 }

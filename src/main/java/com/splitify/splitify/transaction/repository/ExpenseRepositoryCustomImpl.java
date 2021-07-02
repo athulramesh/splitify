@@ -5,7 +5,7 @@ import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.splitify.splitify.transaction.domain.QExpenseEntity;
 import com.splitify.splitify.transaction.domain.QExpenseShareEntity;
-import com.splitify.splitify.transaction.service.DueVo;
+import com.splitify.splitify.transaction.service.DebtVo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -30,7 +30,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     where.and(expenseShareEntity.paymentStatus.in(1, 2));
     where.and(expenseEntity.groupId.eq(groupId));
 
-    JPAQuery<DueVo> query = new JPAQuery<>(entityManager);
+    JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(
             expenseShareEntity.owedBy,
@@ -59,7 +59,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     where.and(expenseShareEntity.paymentStatus.in(1, 2));
     where.and(expenseEntity.groupId.eq(groupId));
 
-    JPAQuery<DueVo> query = new JPAQuery<>(entityManager);
+    JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(
             expenseEntity.paidBy,
@@ -86,7 +86,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     where.and(expenseEntity.paidBy.eq(fromId));
     where.and(expenseShareEntity.paymentStatus.in(1, 2));
 
-    JPAQuery<DueVo> query = new JPAQuery<>(entityManager);
+    JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(
             expenseEntity.groupId,
@@ -115,7 +115,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     where.and(expenseShareEntity.owedBy.eq(toId));
     where.and(expenseShareEntity.paymentStatus.in(1, 2));
 
-    JPAQuery<DueVo> query = new JPAQuery<>(entityManager);
+    JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(
             expenseEntity.groupId,

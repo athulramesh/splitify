@@ -6,7 +6,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.splitify.splitify.connection.domain.QGroupEntity;
 import com.splitify.splitify.connection.domain.QGroupMemberEntity;
 import com.splitify.splitify.connection.enums.GroupStatus;
-import com.splitify.splitify.transaction.service.DueVo;
+import com.splitify.splitify.transaction.service.DebtVo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
@@ -29,7 +29,7 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
     BooleanBuilder where = new BooleanBuilder();
     where.and(groupMember.userId.eq(userId));
     where.and(group.status.eq(GroupStatus.ACTIVE.getCode()));
-    JPAQuery<DueVo> query = new JPAQuery<>(entityManager);
+    JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(group.groupId, group.groupName)
         .from(group)

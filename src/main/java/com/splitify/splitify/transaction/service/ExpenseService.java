@@ -355,4 +355,110 @@ public class ExpenseService {
         .individualTransaction(individualTransactions)
         .build();
   }
+
+  /**
+   * Gets effective amount
+   *
+   * @param groupId group id
+   * @return effective amount
+   */
+  public Map<Integer, BigDecimal> getEffectiveAmount(Integer groupId) {
+    List<ExpenseEntity> expenseEntities = repository.findByGroupId(groupId);
+    Map<Integer, BigDecimal> effectiveAmount = new HashMap<>();
+    expenseEntities.forEach(
+        expenseEntity -> {
+          Integer fromId = expenseEntity.getPaidBy();
+          BigDecimal[] amount = {BigDecimal.ZERO};
+          expenseEntity
+              .getExpenseShare()
+              .forEach(
+                  share -> {
+                    BigDecimal shareAmount = share.getRemainingAmount().negate();
+                    amount[0] = amount[0].add(shareAmount.negate());
+                    BigDecimal inAmount = effectiveAmount.get(share.getOwedBy());
+                    shareAmount = inAmount != null ? shareAmount.add(inAmount) : shareAmount;
+                    effectiveAmount.put(share.getOwedBy(), shareAmount);
+                  });
+          BigDecimal inAmount = effectiveAmount.get(fromId);
+          amount[0] = inAmount != null ? amount[0].add(inAmount) : amount[0];
+          effectiveAmount.put(fromId, amount[0]);
+        });
+    return effectiveAmount;
+  }
+
+  /**
+   * Gets debts
+   *
+   * @param groupId groupId
+   * @return debts
+   */
+  public List<DebtVo> getDebts(Integer groupId) {
+    Map<Integer, BigDecimal> effectiveAmount = getEffectiveAmount(groupId);
+    List<DebtVo> newDebts = new ArrayList<>();
+    while (effectiveAmount.size() > 1) {
+      AmountVo credit = getCredit(effectiveAmount);
+      AmountVo debit = getDebit(effectiveAmount);
+      BigDecimal reducingAmount = credit.getAmount().min(debit.getAmount().abs());
+      if (reducingAmount.compareTo(credit.getAmount()) == 0) {
+        newDebts.add(
+            DebtVo.builder()
+                .amount(reducingAmount)
+                .fromId(debit.getFromId())
+                .toId(credit.getFromId())
+                .build());
+        effectiveAmount.put(
+            debit.getFromId(), effectiveAmount.get(debit.getFromId()).subtract(reducingAmount));
+        effectiveAmount.remove(credit.getFromId());
+      } else {
+        newDebts.add(
+            DebtVo.builder()
+                .amount(reducingAmount)
+                .fromId(debit.getFromId())
+                .toId(credit.getFromId())
+                .build());
+        effectiveAmount.put(
+            credit.getFromId(), effectiveAmount.get(credit.getFromId()).subtract(reducingAmount));
+        effectiveAmount.remove(debit.getFromId());
+      }
+    }
+    return newDebts;
+  }
+
+  /**
+   * Get debit
+   *
+   * @param effectiveAmount effectiveAmount
+   * @return debit
+   */
+  private AmountVo getDebit(Map<Integer, BigDecimal> effectiveAmount) {
+    Integer[] id = {0};
+    BigDecimal[] amount = {BigDecimal.ZERO};
+    effectiveAmount.forEach(
+        (key, value) -> {
+          if (amount[0].compareTo(value) > 0) {
+            amount[0] = value;
+            id[0] = key;
+          }
+        });
+    return AmountVo.builder().amount(amount[0]).fromId(id[0]).build();
+  }
+
+  /**
+   * Get Credits
+   *
+   * @param effectiveAmount effectiveAmount
+   * @return credit
+   */
+  private AmountVo getCredit(Map<Integer, BigDecimal> effectiveAmount) {
+    Integer[] id = {0};
+    BigDecimal[] amount = {BigDecimal.ZERO};
+    effectiveAmount.forEach(
+        (key, value) -> {
+          if (amount[0].compareTo(value) < 0) {
+            amount[0] = value;
+            id[0] = key;
+          }
+        });
+    return AmountVo.builder().amount(amount[0]).fromId(id[0]).build();
+  }
 }

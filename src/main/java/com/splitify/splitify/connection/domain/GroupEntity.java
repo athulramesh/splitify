@@ -40,6 +40,16 @@ public class GroupEntity {
       fetch = FetchType.LAZY)
   private List<GroupMemberEntity> groupMember;
 
+  @Column(name = "ISSIMPLIFIED")
+  private Boolean isSimplified;
+
+  @OneToMany(
+      mappedBy = "group",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  private List<DebtEntity> debt;
+
   public void addGroupMember(Integer createdBy) {
     if (CollectionUtils.isEmpty(groupMember)) {
       groupMember = new ArrayList<>();
