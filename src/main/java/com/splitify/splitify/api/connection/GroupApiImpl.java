@@ -108,4 +108,18 @@ public class GroupApiImpl implements GroupApi {
   public GroupDto getAllGroups(Integer userId) {
     return assembler.assembleGroupDto(groupService.getAllGroups(userId));
   }
+
+  /**
+   * Updates group
+   *
+   * @param groupId groupId
+   * @param simplifyDebt simplifyDebt
+   * @return SuccessMessage
+   */
+  @Override
+  public GroupResponseDto updateSimplifyDebt(Integer groupId, SimplifyDebtDto simplifyDebt) {
+    groupService.simplifyDebt(groupId, simplifyDebt.isSimplify());
+    return assembler.assembleCreateGroupResponse(
+        GroupResponse.builder().successMessage(ConnectionConstants.SUCCESS_MESSAGE).build());
+  }
 }

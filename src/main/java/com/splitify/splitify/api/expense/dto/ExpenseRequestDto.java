@@ -17,4 +17,5 @@ public class ExpenseRequestDto {
   private Integer createdBy;
   private BigDecimal amount;
   private List<ShareDetailsDto> share;
+  private Boolean isExcessPayment;
 }

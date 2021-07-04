@@ -3,6 +3,7 @@ package com.splitify.splitify.transaction.service;
 import com.querydsl.core.Tuple;
 import com.splitify.splitify.api.expense.dto.TransactionDto;
 import com.splitify.splitify.common.exception.ExceptionUtils;
+import com.splitify.splitify.connection.service.GroupService;
 import com.splitify.splitify.security.service.UserService;
 import com.splitify.splitify.transaction.domain.ExpenseEntity;
 import com.splitify.splitify.transaction.domain.ExpenseShareEntity;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /** The Expense service. */
 @Service
@@ -25,6 +23,7 @@ public class ExpenseService {
   @Autowired private ExpenseRepository repository;
   @Autowired private ExceptionUtils exceptionUtils;
   @Autowired private UserService userService;
+  @Autowired private GroupService groupService;
 
   /**
    * Records the expense
@@ -44,11 +43,41 @@ public class ExpenseService {
               .status(ExpenseStatus.ACTIVE.getCode())
               .paymentStatus(ExpensePaymentStatus.UNSETTLED.getCode())
               .onDate(expenseRequest.getOnDate())
+              .isExcessPayment(expenseRequest.getIsExcessPayment())
               .build();
       expenseEntity.addExpenseShare(expenseRequest.getShare());
-      return repository.save(expenseEntity).getExpenseId();
+      Integer expenseId = repository.save(expenseEntity).getExpenseId();
+      if (!expenseRequest.getIsExcessPayment()) {
+        groupService.updateDebtsAfterExpenseAdd(expenseRequest.getGroupId());
+      }
+      return expenseId;
     }
     return null;
+  }
+
+  /**
+   * Gets the expense request
+   *
+   * @param groupId groupId
+   * @param paidBy paidBy
+   * @param amount amount
+   * @param ownerId ownerId
+   * @return expense request
+   */
+  public ExpenseRequest getExpenseRequest(
+      Integer groupId, Integer paidBy, BigDecimal amount, Integer ownerId) {
+    return ExpenseRequest.builder()
+        .amount(amount)
+        .createdBy(paidBy)
+        .expenseName("PAYMENT")
+        .groupId(groupId)
+        .onDate(Calendar.getInstance())
+        .isExcessPayment(true)
+        .paidBy(paidBy)
+        .share(
+            Collections.singletonList(
+                ShareDetails.builder().amount(amount).ownerId(ownerId).build()))
+        .build();
   }
 
   /**
@@ -153,16 +182,33 @@ public class ExpenseService {
    */
   public List<PaymentShareVo> settleExpense(
       Integer groupId, Integer paidBy, Integer receivedBy, BigDecimal amount) {
-    List<ExpenseEntity> expenseEntities = repository.findByGroupIdAndPaidBy(groupId, paidBy);
+    List<ExpenseEntity> expenseEntities = repository.findByGroupIdAndPaidBy(groupId, receivedBy);
     List<PaymentShareVo> paymentShareVos = new ArrayList<>();
-    for (ExpenseEntity expense : expenseEntities) {
-      if (amount.compareTo(BigDecimal.ZERO) > 0) {
-        amount = expense.updateExpenseShareAmount(receivedBy, amount, paymentShareVos);
-        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
-          break;
+    if (groupService.isSimplifiedGroup(groupId)) {
+      for (ExpenseEntity expense : expenseEntities) {
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+          amount = expense.updateExpenseShareAmountForSimplified(amount, paymentShareVos);
+          if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            break;
+          }
+        }
+      }
+    } else {
+      for (ExpenseEntity expense : expenseEntities) {
+        if (amount.compareTo(BigDecimal.ZERO) > 0) {
+          amount = expense.updateExpenseShareAmount(paidBy, amount, paymentShareVos);
+          if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            break;
+          }
         }
       }
     }
+    if (amount.compareTo(BigDecimal.ZERO) > 0) {
+      ExpenseRequest request = getExpenseRequest(groupId, paidBy, amount, receivedBy);
+      recordExpense(request);
+    }
+    repository.saveAll(expenseEntities);
+    groupService.updateDebtsAfterExpenseAdd(groupId);
     return paymentShareVos;
   }
 
@@ -363,7 +409,12 @@ public class ExpenseService {
    * @return effective amount
    */
   public Map<Integer, BigDecimal> getEffectiveAmount(Integer groupId) {
-    List<ExpenseEntity> expenseEntities = repository.findByGroupId(groupId);
+    List<ExpenseEntity> expenseEntities =
+        repository.findByGroupIdAndPaymentStatusIn(
+            groupId,
+            Arrays.asList(
+                ExpensePaymentStatus.PARTIALLY_SETTLED.getCode(),
+                ExpensePaymentStatus.UNSETTLED.getCode()));
     Map<Integer, BigDecimal> effectiveAmount = new HashMap<>();
     expenseEntities.forEach(
         expenseEntity -> {
@@ -435,7 +486,7 @@ public class ExpenseService {
     BigDecimal[] amount = {BigDecimal.ZERO};
     effectiveAmount.forEach(
         (key, value) -> {
-          if (amount[0].compareTo(value) > 0) {
+          if (amount[0].compareTo(value) >= 0) {
             amount[0] = value;
             id[0] = key;
           }
@@ -454,7 +505,7 @@ public class ExpenseService {
     BigDecimal[] amount = {BigDecimal.ZERO};
     effectiveAmount.forEach(
         (key, value) -> {
-          if (amount[0].compareTo(value) < 0) {
+          if (amount[0].compareTo(value) <= 0) {
             amount[0] = value;
             id[0] = key;
           }

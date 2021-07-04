@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class GroupRequest {
   private String groupName;
+  private boolean simplify;
 }

@@ -39,6 +39,9 @@ public class ExpenseEntity {
   @Column(name = "AMOUNT")
   private BigDecimal amount;
 
+  @Column(name = "SETTLEDAMOUNT")
+  private BigDecimal settledAmount;
+
   @Column(name = "STATUS")
   private Integer status;
 
@@ -53,6 +56,9 @@ public class ExpenseEntity {
 
   @Column(name = "CREATEDBY")
   private Integer createdBy;
+
+  @Column(name = "ISEXCESSPAYMENT")
+  private Boolean isExcessPayment;
 
   @OneToMany(
       mappedBy = "expense",
@@ -156,9 +162,11 @@ public class ExpenseEntity {
         BigDecimal remainingAmount = share.getRemainingAmount();
         if (amount.compareTo(remainingAmount) >= 0) {
           share.setSettledAmount(share.getAmount());
+          setSettledAmount(getSettledAmount().add(remainingAmount));
           share.setPaymentStatus(ExpenseSharePaymentStatus.SETTLED.getCode());
         } else {
           share.setSettledAmount(share.getSettledAmount().add(amount));
+          setSettledAmount(getSettledAmount().add(amount));
           share.setPaymentStatus(ExpenseSharePaymentStatus.PARTIALLY_SETTLED.getCode());
         }
         paymentShareVos.add(
@@ -193,5 +201,39 @@ public class ExpenseEntity {
             }
           }
         });
+  }
+
+  /**
+   * update expense share amount for simplified group
+   *
+   * @param amount amount
+   * @param paymentShareVos paymentShareVos
+   * @return Amount
+   */
+  public BigDecimal updateExpenseShareAmountForSimplified(
+      BigDecimal amount, List<PaymentShareVo> paymentShareVos) {
+    for (ExpenseShareEntity share : expenseShare) {
+      if (share.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
+        BigDecimal remainingAmount = share.getRemainingAmount();
+        if (amount.compareTo(remainingAmount) >= 0) {
+          share.setSettledAmount(share.getAmount());
+          share.setPaymentStatus(ExpenseSharePaymentStatus.SETTLED.getCode());
+        } else {
+          share.setSettledAmount(share.getSettledAmount().add(amount));
+          share.setPaymentStatus(ExpenseSharePaymentStatus.PARTIALLY_SETTLED.getCode());
+        }
+        paymentShareVos.add(
+            PaymentShareVo.builder()
+                .expenseId(getExpenseId())
+                .expenseShareId(share.getExpenseShareId())
+                .amount(remainingAmount)
+                .build());
+        amount = amount.subtract(remainingAmount);
+      }
+      if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+        break;
+      }
+    }
+    return amount;
   }
 }

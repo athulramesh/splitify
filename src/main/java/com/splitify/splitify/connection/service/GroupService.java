@@ -37,6 +37,7 @@ public class GroupService {
             .groupName(groupRequest.getGroupName())
             .createdBy(userId)
             .status(GroupStatus.ACTIVE.getCode())
+            .isSimplified(groupRequest.isSimplify())
             .build();
     group.addGroupMember(userId);
     groupRepository.save(group);
@@ -52,6 +53,10 @@ public class GroupService {
   public void updateGroup(Integer groupId, GroupRequest groupRequest) {
     GroupEntity group = getGroupById(groupId);
     group.setGroupName(groupRequest.getGroupName());
+    group.updateSimplify(groupRequest.isSimplify());
+    if (group.getIsSimplified()) {
+      updateDebts(groupId);
+    }
     groupRepository.save(group);
   }
 
@@ -183,7 +188,6 @@ public class GroupService {
    * @param groupId groupId
    */
   public void updateDebts(Integer groupId) {
-
     GroupEntity entity = getGroupById(groupId);
     if (entity != null) {
       List<DebtVo> newDebts = expenseService.getDebts(groupId);
@@ -193,5 +197,35 @@ public class GroupService {
       entity.updateDebt(debtMap);
       groupRepository.save(entity);
     }
+  }
+
+  /**
+   * Updates the simplify group
+   *
+   * @param groupId groupId
+   * @param simplify simplify
+   */
+  public void simplifyDebt(Integer groupId, boolean simplify) {
+    GroupEntity groupEntity = getGroupById(groupId);
+    if (groupEntity != null) {
+      groupEntity.updateSimplify(simplify);
+      if (groupEntity.getIsSimplified()) {
+        updateDebts(groupId);
+      }
+      groupRepository.save(groupEntity);
+    }
+  }
+
+  public void updateDebtsAfterExpenseAdd(Integer groupId) {
+    GroupEntity groupEntity = getGroupById(groupId);
+    if (groupEntity != null && groupEntity.getIsSimplified()) {
+      updateDebts(groupId);
+      groupRepository.save(groupEntity);
+    }
+  }
+
+  public boolean isSimplifiedGroup(Integer groupId) {
+    GroupEntity groupEntity = getGroupById(groupId);
+    return groupEntity != null && groupEntity.getIsSimplified();
   }
 }

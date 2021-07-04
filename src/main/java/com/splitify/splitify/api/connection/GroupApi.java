@@ -79,4 +79,15 @@ public interface GroupApi {
    */
   @GetMapping("{userId}/all-groups")
   GroupDto getAllGroups(@PathVariable("userId") Integer userId);
+
+  /**
+   * Updates group
+   *
+   * @param groupId groupId
+   * @param simplifyDebtDto simplifyDebtDto
+   * @return SuccessMessage
+   */
+  @PutMapping("{groupId}/simplify")
+  GroupResponseDto updateSimplifyDebt(
+      @PathVariable("groupId") Integer groupId, @RequestBody SimplifyDebtDto simplifyDebtDto);
 }

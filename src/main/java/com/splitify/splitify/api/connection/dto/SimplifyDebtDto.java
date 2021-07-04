@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupRequestDto {
-  private String groupName;
+public class SimplifyDebtDto {
   private boolean simplify;
 }

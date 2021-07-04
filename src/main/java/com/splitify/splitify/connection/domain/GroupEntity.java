@@ -114,4 +114,13 @@ public class GroupEntity {
         });
     debt.addAll(insertEntities);
   }
+
+  public void updateSimplify(boolean simplify) {
+    if (getIsSimplified() && !simplify) {
+      setIsSimplified(false);
+      debt.clear();
+    } else if (!getIsSimplified() && simplify) {
+      setIsSimplified(true);
+    }
+  }
 }
