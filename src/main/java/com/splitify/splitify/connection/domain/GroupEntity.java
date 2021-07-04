@@ -8,8 +8,10 @@ import lombok.NoArgsConstructor;
 import org.springframework.util.CollectionUtils;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -50,15 +52,66 @@ public class GroupEntity {
       fetch = FetchType.LAZY)
   private List<DebtEntity> debt;
 
-  public void addGroupMember(Integer createdBy) {
+  /**
+   * Add new group member
+   *
+   * @param userId userId
+   */
+  public void addGroupMember(Integer userId) {
     if (CollectionUtils.isEmpty(groupMember)) {
       groupMember = new ArrayList<>();
     }
     groupMember.add(
         GroupMemberEntity.builder()
             .group(this)
-            .userId(createdBy)
+            .userId(userId)
             .status(GroupMemberStatus.ACTIVE.getCode())
             .build());
+  }
+
+  /**
+   * update Debt entities as per the current expenses and payments
+   *
+   * @param debtMap debtMap
+   */
+  public void updateDebt(Map<String, BigDecimal> debtMap) {
+
+    if (debt != null) {
+      List<DebtEntity> deletedEntities = new ArrayList<>();
+      debt.forEach(
+          debtEntity -> {
+            String key = debtEntity.getFromId() + "-" + debtEntity.getToId();
+            BigDecimal updatedAmount = debtMap.get(key);
+            if (updatedAmount != null) {
+              debtEntity.setAmount(updatedAmount);
+              debtMap.remove(key);
+            } else {
+              deletedEntities.add(debtEntity);
+            }
+          });
+      debt.removeAll(deletedEntities);
+    }
+    addDebtEntities(debtMap);
+  }
+
+  /**
+   * add debt entities
+   *
+   * @param debtMap debtMap
+   */
+  private void addDebtEntities(Map<String, BigDecimal> debtMap) {
+    List<DebtEntity> insertEntities = new ArrayList<>();
+    debtMap.forEach(
+        (key, value) -> {
+          String[] keys = key.split("-");
+          insertEntities.add(
+              DebtEntity.builder()
+                  .fromId(Integer.parseInt(keys[0]))
+                  .toId(Integer.parseInt(keys[1]))
+                  .amount(value)
+                  .group(this)
+                  .build());
+        });
+    debt.addAll(insertEntities);
   }
 }

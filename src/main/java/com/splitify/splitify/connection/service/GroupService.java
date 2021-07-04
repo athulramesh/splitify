@@ -7,19 +7,23 @@ import com.splitify.splitify.connection.enums.GroupStatus;
 import com.splitify.splitify.connection.repository.GroupRepository;
 import com.splitify.splitify.security.service.UserDetails;
 import com.splitify.splitify.security.service.UserService;
+import com.splitify.splitify.transaction.service.DebtVo;
+import com.splitify.splitify.transaction.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /** The Group service. */
 @Service
 public class GroupService {
   @Autowired private GroupRepository groupRepository;
   @Autowired private UserService userService;
-
+  @Autowired private ExpenseService expenseService;
   /**
    * Creates group
    *
@@ -96,24 +100,8 @@ public class GroupService {
     return GroupDetails.builder()
         .groupId(groupEntity.getGroupId())
         .groupName(groupEntity.getGroupName())
-        .createdBy(buildUser(groupEntity.getCreatedBy()))
+        .createdBy(userService.getUserById(groupEntity.getCreatedBy()))
         .groupMemberList(buildGroupMemberList(groupEntity.getGroupMember()))
-        .build();
-  }
-
-  /**
-   * builds user details
-   *
-   * @param userId userId
-   * @return User details
-   */
-  private UserDetails buildUser(Integer userId) {
-    return UserDetails.builder()
-        .id(userService.getUserById(userId).getId())
-        .userName(userService.getUserById(userId).getUserName())
-        .firstName(userService.getUserById(userId).getFirstName())
-        .lastName(userService.getUserById(userId).getLastName())
-        .email(userService.getUserById(userId).getEmail())
         .build();
   }
 
@@ -132,17 +120,7 @@ public class GroupService {
                 groupMemberEntity.getStatus() == GroupMemberStatus.ACTIVE.getCode())
         .forEach(
             groupMemberEntity ->
-                groupMemberDetailsList.add(
-                    UserDetails.builder()
-                        .id(groupMemberEntity.getUserId())
-                        .userName(
-                            userService.getUserById(groupMemberEntity.getUserId()).getUserName())
-                        .firstName(
-                            userService.getUserById(groupMemberEntity.getUserId()).getFirstName())
-                        .lastName(
-                            userService.getUserById(groupMemberEntity.getUserId()).getLastName())
-                        .email(userService.getUserById(groupMemberEntity.getUserId()).getEmail())
-                        .build()));
+                groupMemberDetailsList.add(userService.getUserById(groupMemberEntity.getUserId())));
 
     return groupMemberDetailsList;
   }
@@ -172,9 +150,9 @@ public class GroupService {
         .filter(
             groupMemberEntity ->
                 groupMemberEntity.getUserId().compareTo(groupMemberRequest.getUserId()) == 0)
-        .collect(Collectors.toList())
-        .get(0)
-        .setStatus(GroupMemberStatus.REMOVED.getCode());
+        .findFirst()
+        .ifPresent(entity -> entity.setStatus(GroupMemberStatus.REMOVED.getCode()));
+
     groupRepository.save(groupEntity);
   }
 
@@ -197,5 +175,23 @@ public class GroupService {
                       .build());
             });
     return Group.builder().groups(groupIdentities).build();
+  }
+
+  /**
+   * update Debt entities as per the current expenses and payments
+   *
+   * @param groupId groupId
+   */
+  public void updateDebts(Integer groupId) {
+
+    GroupEntity entity = getGroupById(groupId);
+    if (entity != null) {
+      List<DebtVo> newDebts = expenseService.getDebts(groupId);
+      Map<String, BigDecimal> debtMap = new HashMap<>();
+      newDebts.forEach(
+          debtVo -> debtMap.put(debtVo.getFromId() + "-" + debtVo.getToId(), debtVo.getAmount()));
+      entity.updateDebt(debtMap);
+      groupRepository.save(entity);
+    }
   }
 }
