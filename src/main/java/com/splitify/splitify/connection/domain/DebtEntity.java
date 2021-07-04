@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
@@ -17,7 +18,7 @@ public class DebtEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  @Column(name = "GROUPID")
+  @Column(name = "DEBTID")
   private Integer debtId;
 
   @Column(name = "FROMID")
@@ -27,7 +28,7 @@ public class DebtEntity {
   private Integer toId;
 
   @Column(name = "AMOUNT")
-  private Integer amount;
+  private BigDecimal amount;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "GROUPID", nullable = false)
