@@ -185,10 +185,29 @@ public class ExpenseService {
     List<ExpenseEntity> expenseEntities = repository.findByGroupIdAndPaidBy(groupId, receivedBy);
     List<PaymentShareVo> paymentShareVos = new ArrayList<>();
     if (groupService.isSimplifiedGroup(groupId)) {
+      BigDecimal paidAmount = amount;
       for (ExpenseEntity expense : expenseEntities) {
         if (amount.compareTo(BigDecimal.ZERO) > 0) {
-          amount = expense.updateExpenseShareAmountForSimplified(amount, paymentShareVos);
+          BigDecimal offsetAmount = expense.getOffsetAmount();
+          if (amount.compareTo(offsetAmount) >= 0) {
+            amount = amount.subtract(offsetAmount);
+            expense.setSettledAmount(expense.getAmount());
+            expense.setPaymentStatus(ExpensePaymentStatus.SETTLED.getCode());
+          } else {
+            expense.setSettledAmount(expense.getSettledAmount().add(amount));
+            expense.setPaymentStatus(ExpensePaymentStatus.PARTIALLY_SETTLED.getCode());
+            amount = BigDecimal.ZERO;
+          }
           if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            break;
+          }
+        }
+      }
+      List<ExpenseEntity> payerExpenses = repository.getExpensesByOwner(groupId, paidBy);
+      for (ExpenseEntity expense : payerExpenses) {
+        if (paidAmount.compareTo(BigDecimal.ZERO) > 0) {
+          paidAmount = expense.updateExpenseShareAmount(paidBy, paidAmount, paymentShareVos);
+          if (paidAmount.compareTo(BigDecimal.ZERO) <= 0) {
             break;
           }
         }

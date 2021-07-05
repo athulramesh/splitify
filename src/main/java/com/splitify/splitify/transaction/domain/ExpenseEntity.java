@@ -236,4 +236,8 @@ public class ExpenseEntity {
     }
     return amount;
   }
+
+  public BigDecimal getOffsetAmount() {
+    return getAmount().subtract(getSettledAmount());
+  }
 }

@@ -3,6 +3,7 @@ package com.splitify.splitify.transaction.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.impl.JPAQuery;
+import com.splitify.splitify.transaction.domain.ExpenseEntity;
 import com.splitify.splitify.transaction.domain.QExpenseEntity;
 import com.splitify.splitify.transaction.domain.QExpenseShareEntity;
 import com.splitify.splitify.transaction.service.DebtVo;
@@ -126,6 +127,31 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
         .on(expenseEntity.expenseId.eq(expenseShareEntity.expense.expenseId))
         .groupBy(expenseEntity.groupId)
         .groupBy(expenseEntity.paidBy)
+        .where(where)
+        .fetch();
+  }
+
+  /**
+   * Get expenses by owner
+   *
+   * @param groupId groupId
+   * @param paidBy paidBy
+   * @return expenses
+   */
+  @Override
+  public List<ExpenseEntity> getExpensesByOwner(Integer groupId, Integer paidBy) {
+    QExpenseEntity expenseEntity = QExpenseEntity.expenseEntity;
+    QExpenseShareEntity expenseShareEntity = QExpenseShareEntity.expenseShareEntity;
+    BooleanBuilder where = new BooleanBuilder();
+    where.and(expenseShareEntity.owedBy.eq(paidBy));
+    where.and(expenseShareEntity.paymentStatus.in(1, 2));
+
+    JPAQuery<ExpenseEntity> query = new JPAQuery<>(entityManager);
+    return query
+        .select(expenseEntity)
+        .from(expenseEntity)
+        .innerJoin(expenseShareEntity)
+        .on(expenseEntity.expenseId.eq(expenseShareEntity.expense.expenseId))
         .where(where)
         .fetch();
   }

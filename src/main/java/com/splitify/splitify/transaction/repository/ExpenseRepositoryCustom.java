@@ -1,6 +1,7 @@
 package com.splitify.splitify.transaction.repository;
 
 import com.querydsl.core.Tuple;
+import com.splitify.splitify.transaction.domain.ExpenseEntity;
 
 import java.util.List;
 
@@ -37,4 +38,13 @@ public interface ExpenseRepositoryCustom {
    * @return total due amount
    */
   List<Tuple> getTotalPayableAmountPerGroup(Integer toId);
+
+  /**
+   * Get expenses by owner
+   *
+   * @param groupId groupId
+   * @param paidBy paidBy
+   * @return expenses
+   */
+  List<ExpenseEntity> getExpensesByOwner(Integer groupId, Integer paidBy);
 }
