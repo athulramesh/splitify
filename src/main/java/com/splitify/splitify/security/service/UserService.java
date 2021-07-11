@@ -27,7 +27,7 @@ public class UserService {
    * @param authRequest authRequest
    * @return JWT token
    */
-  public String signIn(AuthRequest authRequest) {
+  public AuthResponse signIn(AuthRequest authRequest) {
     try {
       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(
@@ -35,7 +35,20 @@ public class UserService {
     } catch (Exception ex) {
       exception.throwBadRequestException(SecurityConstants.INVALID_CREDENTIALS);
     }
-    return jwtUtil.generateToken(authRequest.getUserName());
+    return buildAutResponse(authRequest.getUserName());
+  }
+
+  /**
+   * Builds auth response
+   *
+   * @param userName userName
+   * @return Auth response
+   */
+  private AuthResponse buildAutResponse(String userName) {
+    return AuthResponse.builder()
+        .userDetails(buildUser(userRepository.findByUserName(userName)))
+        .jwt(jwtUtil.generateToken(userName))
+        .build();
   }
 
   /**
@@ -44,7 +57,7 @@ public class UserService {
    * @param user user
    * @return JWT token
    */
-  public String signUp(User user) {
+  public AuthResponse signUp(User user) {
     String encodedPassword = passwordEncoder.encode(user.getPassword());
     UserEntity userEntity =
         UserEntity.builder()
@@ -55,7 +68,7 @@ public class UserService {
             .build();
     userEntity.addCredential(encodedPassword);
     userRepository.save(userEntity);
-    return jwtUtil.generateToken(user.getUserName());
+    return buildAutResponse(user.getUserName());
   }
 
   /**
@@ -63,15 +76,13 @@ public class UserService {
    *
    * @param userName userName
    * @return User
-   * @throws Exception exception
    */
-  public UserDetails getUser(String userName) throws Exception {
+  public UserDetails getUser(String userName) {
     UserEntity user = userRepository.findByUserName(userName);
-    if (user != null) {
-      return buildUser(user);
-    } else {
-      throw new Exception(SecurityConstants.USER_NOT_FOUND);
+    if (user == null) {
+      exception.throwBadRequestException(SecurityConstants.USER_NOT_FOUND);
     }
+    return buildUser(user);
   }
 
   /**

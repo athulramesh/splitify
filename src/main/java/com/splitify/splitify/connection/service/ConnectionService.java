@@ -39,8 +39,8 @@ public class ConnectionService {
     List<ConnectionEntity> connectionEntityList =
         type == ConnectionStatus.NEW
             ? connectionRepository.findByConnectionToIdAndStatus(userId, type.getCode())
-            : connectionRepository.findByStatusAndConnectionToIdOrConnectionFromId(
-                type.getCode(), userId, userId);
+            : connectionRepository.findByStatusAndConnectionToIdOrStatusAndConnectionFromId(
+                type.getCode(), userId, type.getCode(), userId);
 
     connectionEntityList.forEach(
         connectionEntity -> {

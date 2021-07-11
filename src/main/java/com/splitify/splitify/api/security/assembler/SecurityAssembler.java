@@ -1,9 +1,11 @@
 package com.splitify.splitify.api.security.assembler;
 
 import com.splitify.splitify.api.security.dto.AuthRequestDto;
+import com.splitify.splitify.api.security.dto.AuthResponseDto;
 import com.splitify.splitify.api.security.dto.UserDetailsDto;
 import com.splitify.splitify.api.security.dto.UserDto;
 import com.splitify.splitify.security.domain.AuthRequest;
+import com.splitify.splitify.security.service.AuthResponse;
 import com.splitify.splitify.security.service.User;
 import com.splitify.splitify.security.service.UserDetails;
 import org.modelmapper.ModelMapper;
@@ -24,5 +26,9 @@ public class SecurityAssembler {
 
   public UserDetailsDto assembleUserDetailsDto(UserDetails user) {
     return modelMapper.map(user, UserDetailsDto.class);
+  }
+
+  public AuthResponseDto assembleAuthResponse(AuthResponse authResponse) {
+    return modelMapper.map(authResponse, AuthResponseDto.class);
   }
 }

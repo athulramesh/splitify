@@ -10,6 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/connections/{userId}")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public interface ConnectionApi {
 
   @PostMapping()

@@ -7,6 +7,7 @@ import com.splitify.splitify.connection.enums.ConnectionStatus;
 import com.splitify.splitify.connection.service.ConnectionDetails;
 import com.splitify.splitify.connection.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,6 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/connections/{userId}")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class ConnectionApiImpl implements ConnectionApi {
 
   @Autowired ConnectionService connectionService;
