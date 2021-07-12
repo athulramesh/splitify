@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 /** expense request dto */
 @Data
@@ -18,4 +19,5 @@ public class ExpenseRequestDto {
   private BigDecimal amount;
   private List<ShareDetailsDto> share;
   private Boolean isExcessPayment;
+  private Calendar onDate;
 }
