@@ -44,6 +44,7 @@ public class ExpenseService {
               .paymentStatus(ExpensePaymentStatus.UNSETTLED.getCode())
               .onDate(expenseRequest.getOnDate())
               .isExcessPayment(expenseRequest.getIsExcessPayment())
+              .settledAmount(BigDecimal.ZERO)
               .build();
       expenseEntity.addExpenseShare(expenseRequest.getShare());
       Integer expenseId = repository.save(expenseEntity).getExpenseId();

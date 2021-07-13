@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("v1/api/payments/")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public interface PaymentApi {
 
   /**
