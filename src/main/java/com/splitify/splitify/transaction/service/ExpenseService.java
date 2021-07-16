@@ -48,7 +48,7 @@ public class ExpenseService {
               .build();
       expenseEntity.addExpenseShare(expenseRequest.getShare());
       Integer expenseId = repository.save(expenseEntity).getExpenseId();
-      if (!expenseRequest.getIsExcessPayment()) {
+      if (expenseRequest.getIsExcessPayment() != null && !expenseRequest.getIsExcessPayment()) {
         groupService.updateDebtsAfterExpenseAdd(expenseRequest.getGroupId());
       }
       return expenseId;
