@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -51,6 +52,9 @@ public class GroupEntity {
       orphanRemoval = true,
       fetch = FetchType.LAZY)
   private List<DebtEntity> debt;
+
+  @Column(name = "ISINDIVIUAL")
+  private Boolean isIndividual;
 
   /**
    * Add new group member
@@ -122,5 +126,25 @@ public class GroupEntity {
     } else if (!getIsSimplified() && simplify) {
       setIsSimplified(true);
     }
+  }
+
+  public List<DebtEntity> getDebtOfUser(Integer userId) {
+    return debt.stream()
+        .filter(d -> d.getFromId().compareTo(userId) == 0 || d.getToId().compareTo(userId) == 0)
+        .collect(Collectors.toList());
+  }
+
+  public BigDecimal getDebtAmountOfUser(Integer userId) {
+    BigDecimal[] amount = {BigDecimal.ZERO};
+    debt.forEach(
+        d -> {
+          if (d.getFromId().compareTo(userId) == 0) {
+            amount[0] = amount[0].add(d.getAmount());
+          }
+          if (d.getToId().compareTo(userId) == 0) {
+            amount[0] = amount[0].subtract(d.getAmount());
+          }
+        });
+    return amount[0];
   }
 }

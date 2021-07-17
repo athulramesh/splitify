@@ -3,7 +3,9 @@ package com.splitify.splitify.transaction.service;
 import com.querydsl.core.Tuple;
 import com.splitify.splitify.api.expense.dto.TransactionDto;
 import com.splitify.splitify.common.exception.ExceptionUtils;
+import com.splitify.splitify.connection.domain.GroupEntity;
 import com.splitify.splitify.connection.service.GroupService;
+import com.splitify.splitify.security.service.UserDetails;
 import com.splitify.splitify.security.service.UserService;
 import com.splitify.splitify.transaction.domain.ExpenseEntity;
 import com.splitify.splitify.transaction.domain.ExpenseShareEntity;
@@ -254,10 +256,15 @@ public class ExpenseService {
   public GroupTransactionDetails getGroupWiseTransactions(Integer fromId) {
     List<Tuple> fromTransactions = repository.getTotalDueAmountPerGroup(fromId);
     Map<String, BigDecimal> map = new HashMap<>();
+    Map<Integer, String> groupMap = new HashMap<>();
     fromTransactions.forEach(
         t -> {
-          String key = t.get(0, Integer.class) + "-" + t.get(1, Integer.class);
+          String key =
+              t.get(3, Boolean.class) == Boolean.FALSE
+                  ? t.get(0, Integer.class) + "-" + t.get(1, Integer.class)
+                  : "null" + "-" + t.get(1, Integer.class);
           map.put(key, t.get(2, BigDecimal.class));
+          groupMap.put(t.get(0, Integer.class), t.get(4, String.class));
         });
     List<Tuple> toTransactions = repository.getTotalPayableAmountPerGroup(fromId);
     Map<Integer, TransactionDto> out = new HashMap<>();
@@ -267,7 +274,11 @@ public class ExpenseService {
           Integer groupId = t.get(0, Integer.class);
           BigDecimal toAmount = t.get(2, BigDecimal.class);
           toAmount = toAmount != null ? toAmount : BigDecimal.ZERO;
-          String key = t.get(0, Integer.class) + "-" + t.get(1, Integer.class);
+          String key =
+              t.get(3, Boolean.class) == Boolean.FALSE
+                  ? t.get(0, Integer.class) + "-" + t.get(1, Integer.class)
+                  : "null" + "-" + t.get(1, Integer.class);
+          groupMap.put(t.get(0, Integer.class), t.get(4, String.class));
           BigDecimal fromAmount = map.get(key);
           if (fromAmount != null) {
             if (fromAmount.compareTo(toAmount) > 0) {
@@ -343,12 +354,32 @@ public class ExpenseService {
             }
           });
     }
+    List<GroupTransaction> transactions = getGroupTransaction(out, groupMap);
+    getSimplifiedGroupTransactions(transactions, fromId);
     return GroupTransactionDetails.builder()
-        .groupTransaction(getGroupTransaction(out))
-        .nonGroupTransaction(getGroupTransaction(nonGroup))
+        .groupTransaction(transactions)
+        .nonGroupTransaction(getGroupTransaction(nonGroup, null))
         .build();
   }
 
+  /**
+   * Get simplified group transaction
+   *
+   * @param transactions transactions
+   * @param fromId fromId
+   */
+  private void getSimplifiedGroupTransactions(List<GroupTransaction> transactions, Integer fromId) {
+    List<GroupTransaction> simplifiedTransactions =
+        groupService.getSimplifiedTransactionsForUser(fromId);
+    transactions.addAll(simplifiedTransactions);
+  }
+
+  /**
+   * is Non group
+   *
+   * @param key key
+   * @return is non group
+   */
   private boolean isNonGroup(String key) {
     return key.split("-")[0].compareTo("null") == 0;
   }
@@ -357,14 +388,42 @@ public class ExpenseService {
    * Get group Transaction
    *
    * @param out out
+   * @param groupMap groupMap
    * @return list of group transaction
    */
-  private List<GroupTransaction> getGroupTransaction(Map<Integer, TransactionDto> out) {
+  private List<GroupTransaction> getGroupTransaction(
+      Map<Integer, TransactionDto> out, Map<Integer, String> groupMap) {
     List<GroupTransaction> transactions = new ArrayList<>();
-    out.forEach(
-        (key, value) -> {
-          transactions.add(GroupTransaction.builder().groupId(key).transaction(value).build());
-        });
+    if (groupMap != null) {
+      out.forEach(
+          (key, value) -> {
+            if (!(value.getFromAmount().compareTo(BigDecimal.ZERO) == 0
+                && value.getToAmount().compareTo(BigDecimal.ZERO) == 0)) {
+              transactions.add(
+                  GroupTransaction.builder()
+                      .groupId(key)
+                      .transaction(value)
+                      .groupName(groupMap.get(key))
+                      .user(null)
+                      .build());
+            }
+          });
+    } else {
+      out.forEach(
+          (key, value) -> {
+            if (!(value.getFromAmount().compareTo(BigDecimal.ZERO) == 0
+                && value.getToAmount().compareTo(BigDecimal.ZERO) == 0)) {
+              UserDetails user = userService.getUserById(key);
+              transactions.add(
+                  GroupTransaction.builder()
+                      .groupId(key)
+                      .transaction(value)
+                      .user(user)
+                      .groupName(null)
+                      .build());
+            }
+          });
+    }
     return transactions;
   }
 
@@ -376,8 +435,27 @@ public class ExpenseService {
    * @return individual transaction.
    */
   public IndividualTransactionDetails getIndividualTransaction(Integer fromId, Integer groupId) {
-    List<Tuple> fromTransactions = repository.getTotalDueAmountInGroup(fromId, groupId);
     List<IndividualTransaction> individualTransactions = new ArrayList<>();
+    GroupEntity groupEntity = groupService.getGroupById(groupId);
+    if (groupEntity.getIsSimplified()) {
+      groupEntity
+          .getDebtOfUser(fromId)
+          .forEach(
+              d -> {
+                individualTransactions.add(
+                    IndividualTransaction.builder()
+                        .amount(d.getAmount())
+                        .isToPay(d.getFromId().compareTo(fromId) == 0)
+                        .person(
+                            userService.getUserById(
+                                d.getFromId().compareTo(fromId) == 0 ? d.getToId() : d.getFromId()))
+                        .build());
+              });
+      return IndividualTransactionDetails.builder()
+          .individualTransaction(individualTransactions)
+          .build();
+    }
+    List<Tuple> fromTransactions = repository.getTotalDueAmountInGroup(fromId, groupId);
     Map<Integer, BigDecimal> map = new HashMap<>();
     fromTransactions.forEach(
         t -> {
@@ -403,7 +481,7 @@ public class ExpenseService {
           individualTransactions.add(
               IndividualTransaction.builder()
                   .amount(amount)
-                  .isPaidBy(isToPay)
+                  .isToPay(isToPay)
                   .person(userService.getUserById(t.get(0, Integer.class)))
                   .build());
         });
@@ -413,7 +491,7 @@ public class ExpenseService {
               individualTransactions.add(
                   IndividualTransaction.builder()
                       .amount(value)
-                      .isPaidBy(Boolean.FALSE)
+                      .isToPay(Boolean.FALSE)
                       .person(userService.getUserById(key))
                       .build()));
     }
@@ -531,5 +609,22 @@ public class ExpenseService {
           }
         });
     return AmountVo.builder().amount(amount[0]).fromId(id[0]).build();
+  }
+
+  /**
+   * Get user expenses
+   *
+   * @param userId userId
+   * @param groupId groupId
+   * @return user expenses
+   */
+  public UserExpenseDetails getUserExpenses(Integer userId, Integer groupId) {
+    List<ExpenseEntity> expenseEntities = repository.getExpensesOfUser(userId, groupId);
+    List<ExpenseDetails> expenses = new ArrayList<>();
+    expenseEntities.forEach(
+        expenseEntity -> {
+          expenses.add(buildExpense(expenseEntity));
+        });
+    return UserExpenseDetails.builder().expenses(expenses).build();
   }
 }

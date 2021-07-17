@@ -14,6 +14,6 @@ import java.math.BigDecimal;
 @Builder
 public class IndividualTransaction {
   private UserDetails person;
-  private Boolean isPaidBy;
+  private Boolean isToPay;
   private BigDecimal amount;
 }

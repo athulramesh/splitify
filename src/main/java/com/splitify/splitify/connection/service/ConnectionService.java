@@ -18,6 +18,7 @@ public class ConnectionService {
 
   @Autowired ConnectionRepository connectionRepository;
   @Autowired UserRepository userRepository;
+  @Autowired GroupService groupService;
 
   public ConnectionId sendConnectionRequest(Integer fromUserId, TargetUser targetUser) {
     if (targetUser != null && targetUser.getTargetUserId() != null) {
@@ -77,6 +78,8 @@ public class ConnectionService {
         connectionRepository.findByConnectionId(connectionIdDto.getConnectionId());
     connectionEntityRequest.setStatus(ConnectionStatus.ACTIVE.getCode());
     connectionEntityRequest.setApprovalDate(Calendar.getInstance());
+    groupService.createIndividualGroup(
+        connectionEntityRequest.getConnectionFromId(), connectionEntityRequest.getConnectionToId());
     connectionRepository.save(connectionEntityRequest);
     return "Success";
   }

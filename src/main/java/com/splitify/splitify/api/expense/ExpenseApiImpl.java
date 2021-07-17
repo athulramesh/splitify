@@ -4,6 +4,7 @@ import com.splitify.splitify.api.expense.assembler.ExpenseAssembler;
 import com.splitify.splitify.api.expense.dto.ExpenseDetailsDto;
 import com.splitify.splitify.api.expense.dto.ExpenseRequestDto;
 import com.splitify.splitify.api.expense.dto.ExpenseResponseDto;
+import com.splitify.splitify.api.expense.dto.UserExpenseDetailsDto;
 import com.splitify.splitify.transaction.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -62,5 +63,16 @@ public class ExpenseApiImpl implements ExpenseApi {
   @Override
   public ExpenseDetailsDto getExpenseDetails(Integer expenseId) {
     return assembler.assembleExpenseRequest(service.getExpenseDetails(expenseId));
+  }
+
+  /**
+   * Get expenses.
+   *
+   * @param userId userId.
+   * @return expense details.
+   */
+  @Override
+  public UserExpenseDetailsDto getUserExpenses(Integer userId, Integer groupId) {
+    return assembler.assembleUserExpenseRequest(service.getUserExpenses(userId, groupId));
   }
 }

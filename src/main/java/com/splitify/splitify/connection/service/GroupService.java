@@ -1,5 +1,6 @@
 package com.splitify.splitify.connection.service;
 
+import com.splitify.splitify.api.expense.dto.TransactionDto;
 import com.splitify.splitify.connection.domain.GroupEntity;
 import com.splitify.splitify.connection.domain.GroupMemberEntity;
 import com.splitify.splitify.connection.enums.GroupMemberStatus;
@@ -9,6 +10,7 @@ import com.splitify.splitify.security.service.UserDetails;
 import com.splitify.splitify.security.service.UserService;
 import com.splitify.splitify.transaction.service.DebtVo;
 import com.splitify.splitify.transaction.service.ExpenseService;
+import com.splitify.splitify.transaction.service.GroupTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +68,7 @@ public class GroupService {
    * @param id id
    * @return Group Entity
    */
-  private GroupEntity getGroupById(Integer id) {
+  public GroupEntity getGroupById(Integer id) {
     return groupRepository.findById(id).orElse(null);
   }
 
@@ -170,7 +172,7 @@ public class GroupService {
   public Group getAllGroups(Integer userId) {
     List<GroupIdentity> groupIdentities = new ArrayList<>();
     groupRepository
-        .getAllGroups(userId)
+        .getAllGroups(userId, Boolean.FALSE)
         .forEach(
             g -> {
               groupIdentities.add(
@@ -227,5 +229,53 @@ public class GroupService {
   public boolean isSimplifiedGroup(Integer groupId) {
     GroupEntity groupEntity = getGroupById(groupId);
     return groupEntity != null && groupEntity.getIsSimplified();
+  }
+
+  public Integer createIndividualGroup(Integer connectionFromId, Integer connectionToId) {
+    GroupEntity group =
+        GroupEntity.builder()
+            .groupName("INDIVIDUAL")
+            .createdBy(connectionFromId)
+            .status(GroupStatus.ACTIVE.getCode())
+            .isSimplified(false)
+            .build();
+    group.addGroupMember(connectionFromId);
+    group.addGroupMember(connectionToId);
+    return groupRepository.save(group).getGroupId();
+  }
+
+  public List<GroupTransaction> getSimplifiedTransactionsForUser(Integer fromId) {
+    List<GroupTransaction> simplifiedTransactions = new ArrayList<>();
+    List<GroupEntity> groups = groupRepository.getAllGroupsOfUser(fromId, Boolean.FALSE);
+    groups.forEach(
+        g -> {
+          BigDecimal amount = g.getDebtAmountOfUser(fromId);
+          if (amount.compareTo(BigDecimal.ZERO) >= 0) {
+            simplifiedTransactions.add(
+                GroupTransaction.builder()
+                    .groupId(g.getGroupId())
+                    .groupName(g.getGroupName())
+                    .user(null)
+                    .transaction(
+                        TransactionDto.builder()
+                            .fromAmount(amount)
+                            .toAmount(BigDecimal.ZERO)
+                            .build())
+                    .build());
+          } else {
+            simplifiedTransactions.add(
+                GroupTransaction.builder()
+                    .groupId(g.getGroupId())
+                    .groupName(g.getGroupName())
+                    .user(null)
+                    .transaction(
+                        TransactionDto.builder()
+                            .toAmount(amount.negate())
+                            .fromAmount(BigDecimal.ZERO)
+                            .build())
+                    .build());
+          }
+        });
+    return simplifiedTransactions;
   }
 }

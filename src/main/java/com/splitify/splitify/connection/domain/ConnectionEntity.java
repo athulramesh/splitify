@@ -41,4 +41,7 @@ public class ConnectionEntity {
 
   @Column(name = "REJECTEDDATE")
   private Calendar rejectedDate;
+
+  @Column(name = "GROUPID")
+  private Integer groupid;
 }

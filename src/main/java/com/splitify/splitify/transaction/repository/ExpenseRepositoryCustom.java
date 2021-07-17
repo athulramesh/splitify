@@ -47,4 +47,12 @@ public interface ExpenseRepositoryCustom {
    * @return expenses
    */
   List<ExpenseEntity> getExpensesByOwner(Integer groupId, Integer paidBy);
+
+  /**
+   * Get expenses of user
+   *
+   * @param userId userId
+   * @return expense of user
+   */
+  List<ExpenseEntity> getExpensesOfUser(Integer userId, Integer groupId);
 }

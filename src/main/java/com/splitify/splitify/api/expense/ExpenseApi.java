@@ -3,6 +3,7 @@ package com.splitify.splitify.api.expense;
 import com.splitify.splitify.api.expense.dto.ExpenseDetailsDto;
 import com.splitify.splitify.api.expense.dto.ExpenseRequestDto;
 import com.splitify.splitify.api.expense.dto.ExpenseResponseDto;
+import com.splitify.splitify.api.expense.dto.UserExpenseDetailsDto;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -46,4 +47,14 @@ public interface ExpenseApi {
    */
   @GetMapping("{expenseId}/")
   ExpenseDetailsDto getExpenseDetails(@PathVariable("expenseId") Integer expenseId);
+
+  /**
+   * Get expenses.
+   *
+   * @param userId userId.
+   * @return expense details.
+   */
+  @GetMapping("{userId}/group/{groupId}")
+  UserExpenseDetailsDto getUserExpenses(
+      @PathVariable("userId") Integer userId, @PathVariable("groupId") Integer groupId);
 }
