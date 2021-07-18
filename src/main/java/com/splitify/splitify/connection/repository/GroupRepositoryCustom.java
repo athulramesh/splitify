@@ -12,7 +12,7 @@ public interface GroupRepositoryCustom {
    * @param userId userId
    * @return all groups
    */
-  List<Tuple> getAllGroups(Integer userId, Boolean isSimplified);
+  List<Tuple> getAllGroups(Integer userId);
 
   List<GroupEntity> getAllGroupsOfUser(Integer userId, Boolean isSimplified);
 }

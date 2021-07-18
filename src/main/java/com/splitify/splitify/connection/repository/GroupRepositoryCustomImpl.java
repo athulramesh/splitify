@@ -24,13 +24,13 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
    * @return all groups
    */
   @Override
-  public List<Tuple> getAllGroups(Integer userId, Boolean isSimplified) {
+  public List<Tuple> getAllGroups(Integer userId) {
     QGroupEntity group = QGroupEntity.groupEntity;
     QGroupMemberEntity groupMember = QGroupMemberEntity.groupMemberEntity;
     BooleanBuilder where = new BooleanBuilder();
     where.and(groupMember.userId.eq(userId));
     where.and(group.status.eq(GroupStatus.ACTIVE.getCode()));
-    where.and(group.isSimplified.eq(isSimplified));
+    where.and(group.isIndividual.eq(Boolean.FALSE));
     JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(group.groupId, group.groupName)

@@ -13,7 +13,7 @@ import java.util.Calendar;
 @Builder
 public class ConnectionDetails {
 
-  private Integer fromId;
+  private Integer id;
   private String userName;
   private String firstName;
   private String lastName;

@@ -40,6 +40,7 @@ public class GroupService {
             .createdBy(userId)
             .status(GroupStatus.ACTIVE.getCode())
             .isSimplified(groupRequest.isSimplify())
+            .isIndividual(Boolean.FALSE)
             .build();
     group.addGroupMember(userId);
     groupRepository.save(group);
@@ -172,7 +173,7 @@ public class GroupService {
   public Group getAllGroups(Integer userId) {
     List<GroupIdentity> groupIdentities = new ArrayList<>();
     groupRepository
-        .getAllGroups(userId, Boolean.FALSE)
+        .getAllGroups(userId)
         .forEach(
             g -> {
               groupIdentities.add(
@@ -238,6 +239,7 @@ public class GroupService {
             .createdBy(connectionFromId)
             .status(GroupStatus.ACTIVE.getCode())
             .isSimplified(false)
+            .isIndividual(Boolean.TRUE)
             .build();
     group.addGroupMember(connectionFromId);
     group.addGroupMember(connectionToId);

@@ -54,7 +54,7 @@ public class ConnectionService {
             if (friend != null) {
               connectionDetailsList.add(
                   ConnectionDetails.builder()
-                      .fromId(friendId)
+                      .id(friendId)
                       .groupId(connectionEntity.getGroupid())
                       .userName(friend.getUserName())
                       .firstName(friend.getFirstName())
@@ -79,8 +79,11 @@ public class ConnectionService {
         connectionRepository.findByConnectionId(connectionIdDto.getConnectionId());
     connectionEntityRequest.setStatus(ConnectionStatus.ACTIVE.getCode());
     connectionEntityRequest.setApprovalDate(Calendar.getInstance());
-    groupService.createIndividualGroup(
-        connectionEntityRequest.getConnectionFromId(), connectionEntityRequest.getConnectionToId());
+    Integer groupId =
+        groupService.createIndividualGroup(
+            connectionEntityRequest.getConnectionFromId(),
+            connectionEntityRequest.getConnectionToId());
+    connectionEntityRequest.setGroupid(groupId);
     connectionRepository.save(connectionEntityRequest);
     return "Success";
   }
