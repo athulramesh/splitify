@@ -55,6 +55,7 @@ public class ConnectionService {
               connectionDetailsList.add(
                   ConnectionDetails.builder()
                       .fromId(friendId)
+                      .groupId(connectionEntity.getGroupid())
                       .userName(friend.getUserName())
                       .firstName(friend.getFirstName())
                       .lastName(friend.getLastName())

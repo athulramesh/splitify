@@ -19,4 +19,5 @@ public class ConnectionDetails {
   private String lastName;
   private Calendar requestDate;
   private Integer connectionId;
+  private Integer groupId;
 }
