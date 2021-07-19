@@ -285,6 +285,8 @@ public class ExpenseService {
                   : "null" + "-" + t.get(1, Integer.class);
           if (t.get(3, String.class).compareTo("INDIVIDUAL") != 0) {
             groupMap.put(t.get(0, Integer.class), t.get(3, String.class));
+          } else {
+            individualGroup.put(t.get(1, Integer.class), t.get(0, Integer.class));
           }
           BigDecimal fromAmount = map.get(key);
           if (fromAmount != null) {
