@@ -248,11 +248,11 @@ public class GroupService {
 
   public List<GroupTransaction> getSimplifiedTransactionsForUser(Integer fromId) {
     List<GroupTransaction> simplifiedTransactions = new ArrayList<>();
-    List<GroupEntity> groups = groupRepository.getAllGroupsOfUser(fromId, Boolean.FALSE);
+    List<GroupEntity> groups = groupRepository.getAllGroupsOfUser(fromId, Boolean.TRUE);
     groups.forEach(
         g -> {
           BigDecimal amount = g.getDebtAmountOfUser(fromId);
-          if (amount.compareTo(BigDecimal.ZERO) >= 0) {
+          if (amount.compareTo(BigDecimal.ZERO) > 0) {
             simplifiedTransactions.add(
                 GroupTransaction.builder()
                     .groupId(g.getGroupId())
@@ -264,7 +264,7 @@ public class GroupService {
                             .toAmount(BigDecimal.ZERO)
                             .build())
                     .build());
-          } else {
+          } else if (amount.compareTo(BigDecimal.ZERO) < 0) {
             simplifiedTransactions.add(
                 GroupTransaction.builder()
                     .groupId(g.getGroupId())

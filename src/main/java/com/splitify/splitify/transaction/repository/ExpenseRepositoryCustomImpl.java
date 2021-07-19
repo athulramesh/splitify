@@ -93,17 +93,16 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(
-            expenseEntity.groupId,
+            groupEntity.groupId,
             expenseShareEntity.owedBy,
             expenseShareEntity.amount.sum().subtract(expenseShareEntity.settledAmount.sum()),
-            groupEntity.isIndividual,
             groupEntity.groupName)
         .from(expenseEntity)
         .innerJoin(expenseShareEntity)
         .on(expenseEntity.expenseId.eq(expenseShareEntity.expense.expenseId))
         .innerJoin(groupEntity)
         .on(groupEntity.groupId.eq(expenseEntity.groupId))
-        .groupBy(expenseEntity.groupId)
+        .groupBy(groupEntity.groupId)
         .groupBy(expenseShareEntity.owedBy)
         .where(where)
         .fetch();
@@ -128,17 +127,16 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(
-            expenseEntity.groupId,
+            groupEntity.groupId,
             expenseEntity.paidBy,
             expenseShareEntity.amount.sum().subtract(expenseShareEntity.settledAmount.sum()),
-            groupEntity.isIndividual,
             groupEntity.groupName)
         .from(expenseEntity)
         .innerJoin(expenseShareEntity)
         .on(expenseEntity.expenseId.eq(expenseShareEntity.expense.expenseId))
         .innerJoin(groupEntity)
         .on(groupEntity.groupId.eq(expenseEntity.groupId))
-        .groupBy(expenseEntity.groupId)
+        .groupBy(groupEntity.groupId)
         .groupBy(expenseEntity.paidBy)
         .where(where)
         .fetch();

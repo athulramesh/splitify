@@ -55,6 +55,7 @@ public class GroupRepositoryCustomImpl implements GroupRepositoryCustom {
     where.and(groupMember.userId.eq(userId));
     where.and(group.status.eq(GroupStatus.ACTIVE.getCode()));
     where.and(group.isSimplified.eq(isSimplified));
+    where.and(group.isIndividual.eq(Boolean.FALSE));
     JPAQuery<DebtVo> query = new JPAQuery<>(entityManager);
     return query
         .select(group)

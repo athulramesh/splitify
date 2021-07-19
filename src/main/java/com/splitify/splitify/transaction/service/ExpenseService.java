@@ -260,11 +260,13 @@ public class ExpenseService {
     fromTransactions.forEach(
         t -> {
           String key =
-              t.get(3, Boolean.class) == Boolean.FALSE
+              t.get(3, String.class).compareTo("INDIVIDUAL") != 0
                   ? t.get(0, Integer.class) + "-" + t.get(1, Integer.class)
                   : "null" + "-" + t.get(1, Integer.class);
           map.put(key, t.get(2, BigDecimal.class));
-          groupMap.put(t.get(0, Integer.class), t.get(4, String.class));
+          if (t.get(3, String.class).compareTo("INDIVIDUAL") != 0) {
+            groupMap.put(t.get(0, Integer.class), t.get(3, String.class));
+          }
         });
     List<Tuple> toTransactions = repository.getTotalPayableAmountPerGroup(fromId);
     Map<Integer, TransactionDto> out = new HashMap<>();
@@ -275,10 +277,12 @@ public class ExpenseService {
           BigDecimal toAmount = t.get(2, BigDecimal.class);
           toAmount = toAmount != null ? toAmount : BigDecimal.ZERO;
           String key =
-              t.get(3, Boolean.class) == Boolean.FALSE
+              t.get(3, String.class).compareTo("INDIVIDUAL") != 0
                   ? t.get(0, Integer.class) + "-" + t.get(1, Integer.class)
                   : "null" + "-" + t.get(1, Integer.class);
-          groupMap.put(t.get(0, Integer.class), t.get(4, String.class));
+          if (t.get(3, String.class).compareTo("INDIVIDUAL") != 0) {
+            groupMap.put(t.get(0, Integer.class), t.get(3, String.class));
+          }
           BigDecimal fromAmount = map.get(key);
           if (fromAmount != null) {
             if (fromAmount.compareTo(toAmount) > 0) {
@@ -338,7 +342,8 @@ public class ExpenseService {
     if (!CollectionUtils.isEmpty(map)) {
       map.forEach(
           (key, value) -> {
-            Integer groupId = Integer.parseInt(key.split("-")[0]);
+            boolean isNonGroup = isNonGroup(key);
+            Integer groupId = isNonGroup ? -1 : Integer.parseInt(key.split("-")[0]);
             TransactionDto transactionDto;
             if (out.containsKey(groupId)) {
               transactionDto = out.get(groupId);
@@ -347,7 +352,7 @@ public class ExpenseService {
               transactionDto =
                   TransactionDto.builder().fromAmount(value).toAmount(BigDecimal.ZERO).build();
             }
-            if (isNonGroup(key)) {
+            if (isNonGroup) {
               nonGroup.put(Integer.valueOf(key.split("-")[1]), transactionDto);
             } else {
               out.put(groupId, transactionDto);
