@@ -257,6 +257,7 @@ public class ExpenseService {
     List<Tuple> fromTransactions = repository.getTotalDueAmountPerGroup(fromId);
     Map<String, BigDecimal> map = new HashMap<>();
     Map<Integer, String> groupMap = new HashMap<>();
+    Map<Integer, Integer> individualGroup = new HashMap<>();
     fromTransactions.forEach(
         t -> {
           String key =
@@ -266,6 +267,8 @@ public class ExpenseService {
           map.put(key, t.get(2, BigDecimal.class));
           if (t.get(3, String.class).compareTo("INDIVIDUAL") != 0) {
             groupMap.put(t.get(0, Integer.class), t.get(3, String.class));
+          } else {
+            individualGroup.put(t.get(1, Integer.class), t.get(0, Integer.class));
           }
         });
     List<Tuple> toTransactions = repository.getTotalPayableAmountPerGroup(fromId);
@@ -359,11 +362,11 @@ public class ExpenseService {
             }
           });
     }
-    List<GroupTransaction> transactions = getGroupTransaction(out, groupMap);
+    List<GroupTransaction> transactions = getGroupTransaction(out, groupMap, null);
     getSimplifiedGroupTransactions(transactions, fromId);
     return GroupTransactionDetails.builder()
         .groupTransaction(transactions)
-        .nonGroupTransaction(getGroupTransaction(nonGroup, null))
+        .nonGroupTransaction(getGroupTransaction(nonGroup, null, individualGroup))
         .build();
   }
 
@@ -394,10 +397,13 @@ public class ExpenseService {
    *
    * @param out out
    * @param groupMap groupMap
+   * @param individualGroup individualGroup
    * @return list of group transaction
    */
   private List<GroupTransaction> getGroupTransaction(
-      Map<Integer, TransactionDto> out, Map<Integer, String> groupMap) {
+      Map<Integer, TransactionDto> out,
+      Map<Integer, String> groupMap,
+      Map<Integer, Integer> individualGroup) {
     List<GroupTransaction> transactions = new ArrayList<>();
     if (groupMap != null) {
       out.forEach(
@@ -421,7 +427,7 @@ public class ExpenseService {
               UserDetails user = userService.getUserById(key);
               transactions.add(
                   GroupTransaction.builder()
-                      .groupId(key)
+                      .groupId(individualGroup.get(key))
                       .transaction(value)
                       .user(user)
                       .groupName(null)
