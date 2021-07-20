@@ -632,9 +632,20 @@ public class ExpenseService {
    * @return user expenses
    */
   public UserExpenseDetails getUserExpenses(Integer userId, Integer groupId) {
-    List<ExpenseEntity> expenseEntities = repository.getExpensesOfUser(userId, groupId);
+    List<ExpenseEntity> expenseEntities =
+        repository.findByGroupIdAndPaidByAndPaymentStatusIn(
+            groupId,
+            userId,
+            Arrays.asList(
+                ExpensePaymentStatus.PARTIALLY_SETTLED.getCode(),
+                ExpensePaymentStatus.UNSETTLED.getCode()));
+    List<ExpenseEntity> expenseSharedEntities = repository.getExpensesSharedOfUser(userId, groupId);
     List<ExpenseDetails> expenses = new ArrayList<>();
     expenseEntities.forEach(
+        expenseEntity -> {
+          expenses.add(buildExpense(expenseEntity));
+        });
+    expenseSharedEntities.forEach(
         expenseEntity -> {
           expenses.add(buildExpense(expenseEntity));
         });

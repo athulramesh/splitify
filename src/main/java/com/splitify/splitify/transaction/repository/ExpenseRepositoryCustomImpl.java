@@ -168,23 +168,18 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
   }
 
   /**
-   * Get expense of user.
+   * Get expenses shared of user
    *
-   * @param userId userId userId.
-   * @return get expenses of user.
+   * @param userId userId
+   * @param groupId groupId
+   * @return expense of user
    */
   @Override
-  public List<ExpenseEntity> getExpensesOfUser(Integer userId, Integer groupId) {
+  public List<ExpenseEntity> getExpensesSharedOfUser(Integer userId, Integer groupId) {
     QExpenseEntity expenseEntity = QExpenseEntity.expenseEntity;
     QExpenseShareEntity expenseShareEntity = QExpenseShareEntity.expenseShareEntity;
     BooleanBuilder where = new BooleanBuilder();
-    where.and(
-        expenseShareEntity
-            .owedBy
-            .eq(userId)
-            .and(expenseShareEntity.paymentStatus.in(1, 2))
-            .or(expenseEntity.paidBy.eq(userId))
-            .and(expenseEntity.paymentStatus.in(1, 2)));
+    where.and(expenseShareEntity.owedBy.eq(userId).and(expenseShareEntity.paymentStatus.in(1, 2)));
     where.and(expenseEntity.groupId.eq(groupId));
     JPAQuery<ExpenseEntity> query = new JPAQuery<>(entityManager);
     return query

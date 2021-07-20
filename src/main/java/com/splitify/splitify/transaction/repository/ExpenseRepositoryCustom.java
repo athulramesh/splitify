@@ -49,10 +49,10 @@ public interface ExpenseRepositoryCustom {
   List<ExpenseEntity> getExpensesByOwner(Integer groupId, Integer paidBy);
 
   /**
-   * Get expenses of user
+   * Get expenses shared of user
    *
    * @param userId userId
    * @return expense of user
    */
-  List<ExpenseEntity> getExpensesOfUser(Integer userId, Integer groupId);
+  List<ExpenseEntity> getExpensesSharedOfUser(Integer userId, Integer groupId);
 }

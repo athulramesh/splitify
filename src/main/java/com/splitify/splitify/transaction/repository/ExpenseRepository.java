@@ -24,4 +24,14 @@ public interface ExpenseRepository
    * @return expense entity
    */
   List<ExpenseEntity> findByGroupIdAndPaymentStatusIn(Integer groupId, List<Integer> paymentStatus);
+
+  /**
+   * Find by group id and paid by.
+   *
+   * @param groupId groupId
+   * @param paidBy paidBy
+   * @return expense entity
+   */
+  List<ExpenseEntity> findByGroupIdAndPaidByAndPaymentStatusIn(
+      Integer groupId, Integer paidBy, List<Integer> status);
 }
