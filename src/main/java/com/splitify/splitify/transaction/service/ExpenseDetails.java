@@ -19,5 +19,6 @@ public class ExpenseDetails {
   private UserDetails paidBy;
   private UserDetails createdBy;
   private BigDecimal amount;
+  private BigDecimal settledAmount;
   private List<ExpenseShareDetails> share;
 }

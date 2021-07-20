@@ -146,6 +146,7 @@ public class ExpenseService {
   private ExpenseDetails buildExpense(ExpenseEntity expenseEntity) {
     return ExpenseDetails.builder()
         .amount(expenseEntity.getAmount())
+        .settledAmount(expenseEntity.getSettledAmount())
         .createdBy(userService.getUserById(expenseEntity.getCreatedBy()))
         .groupId(expenseEntity.getGroupId())
         .paidBy(userService.getUserById(expenseEntity.getPaidBy()))

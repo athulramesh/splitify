@@ -18,5 +18,6 @@ public class ExpenseDetailsDto {
   private UserDetailsDto paidBy;
   private UserDetailsDto createdBy;
   private BigDecimal amount;
+  private BigDecimal settledAmount;
   private List<ExpenseShareDetailsDto> share;
 }
