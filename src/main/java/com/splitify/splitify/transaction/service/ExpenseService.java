@@ -378,9 +378,40 @@ public class ExpenseService {
     }
     List<GroupTransaction> transactions = getGroupTransaction(out, groupMap, null);
     getSimplifiedGroupTransactions(transactions, fromId);
+    List<GroupTransaction> nonGroups = getGroupTransaction(nonGroup, null, individualGroup);
+    BigDecimal[] fromAmount = {BigDecimal.ZERO};
+    BigDecimal[] toAmount = {BigDecimal.ZERO};
+    transactions.forEach(
+        t -> {
+          fromAmount[0] =
+              fromAmount[0].add(
+                  t.getTransaction().getFromAmount() != null
+                      ? t.getTransaction().getFromAmount()
+                      : BigDecimal.ZERO);
+          toAmount[0] =
+              toAmount[0].add(
+                  t.getTransaction().getToAmount() != null
+                      ? t.getTransaction().getToAmount()
+                      : BigDecimal.ZERO);
+        });
+    nonGroups.forEach(
+        t -> {
+          fromAmount[0] =
+              fromAmount[0].add(
+                  t.getTransaction().getFromAmount() != null
+                      ? t.getTransaction().getFromAmount()
+                      : BigDecimal.ZERO);
+          toAmount[0] =
+              toAmount[0].add(
+                  t.getTransaction().getToAmount() != null
+                      ? t.getTransaction().getToAmount()
+                      : BigDecimal.ZERO);
+        });
     return GroupTransactionDetails.builder()
         .groupTransaction(transactions)
-        .nonGroupTransaction(getGroupTransaction(nonGroup, null, individualGroup))
+        .nonGroupTransaction(nonGroups)
+        .fromAmount(fromAmount[0])
+        .toAmount(toAmount[0])
         .build();
   }
 

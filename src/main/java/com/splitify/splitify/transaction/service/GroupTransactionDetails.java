@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /** expense details dto */
@@ -15,4 +16,6 @@ import java.util.List;
 public class GroupTransactionDetails {
   private List<GroupTransaction> groupTransaction;
   private List<GroupTransaction> nonGroupTransaction;
+  private BigDecimal fromAmount;
+  private BigDecimal toAmount;
 }
