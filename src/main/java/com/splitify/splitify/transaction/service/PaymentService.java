@@ -7,6 +7,8 @@ import com.splitify.splitify.transaction.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /** The Expense service. */
@@ -105,15 +107,19 @@ public class PaymentService {
   /**
    * Get Expense details
    *
-   * @param paymentId expenseId
+   * @param groupId groupId
+   * @param userId userId
+   * @param date date
    * @return expense details
    */
-  public PaymentDetails getPaymentDetails(Integer paymentId) {
-    PaymentEntity paymentEntity = getPaymentEntity(paymentId);
-    if (paymentEntity != null) {
-      return buildPayment(paymentEntity);
-    }
-    return null;
+  public PaymentDetails getPaymentDetails(Integer groupId, Integer userId, Calendar date) {
+    List<PaymentEntity> payments = repository.getPaymentOfUser(userId, groupId, date);
+    List<PaymentDetailsList> paymentDetailsLists = new ArrayList<>();
+    payments.forEach(
+        p -> {
+          paymentDetailsLists.add(buildPayment(p));
+        });
+    return PaymentDetails.builder().payments(paymentDetailsLists).build();
   }
 
   /**
@@ -122,8 +128,8 @@ public class PaymentService {
    * @param paymentEntity paymentEntity
    * @return expense details
    */
-  private PaymentDetails buildPayment(PaymentEntity paymentEntity) {
-    return PaymentDetails.builder()
+  private PaymentDetailsList buildPayment(PaymentEntity paymentEntity) {
+    return PaymentDetailsList.builder()
         .amount(paymentEntity.getAmount())
         .createdBy(userService.getUserById(paymentEntity.getCreatedBy()))
         .groupId(paymentEntity.getGroupId())

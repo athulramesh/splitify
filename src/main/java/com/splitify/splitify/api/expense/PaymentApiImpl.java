@@ -6,9 +6,9 @@ import com.splitify.splitify.api.expense.dto.PaymentRequestDto;
 import com.splitify.splitify.api.expense.dto.PaymentResponseDto;
 import com.splitify.splitify.transaction.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Calendar;
 
 @RestController
 @RequestMapping("v1/api/payments/")
@@ -56,11 +56,14 @@ public class PaymentApiImpl implements PaymentApi {
   /**
    * Get payment details.
    *
-   * @param paymentId expenseId.
+   * @param groupId groupId.
    * @return payment details.
    */
   @Override
-  public PaymentDetailsDto getPaymentDetails(Integer paymentId) {
-    return assembler.assemblePaymentRequest(service.getPaymentDetails(paymentId));
+  public PaymentDetailsDto getPaymentDetails(
+      @PathVariable("groupId") Integer groupId,
+      @PathVariable("userId") Integer userId,
+      @RequestParam Calendar date) {
+    return assembler.assemblePaymentRequest(service.getPaymentDetails(groupId, userId, date));
   }
 }

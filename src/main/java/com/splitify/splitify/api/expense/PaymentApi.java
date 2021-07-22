@@ -3,7 +3,10 @@ package com.splitify.splitify.api.expense;
 import com.splitify.splitify.api.expense.dto.PaymentDetailsDto;
 import com.splitify.splitify.api.expense.dto.PaymentRequestDto;
 import com.splitify.splitify.api.expense.dto.PaymentResponseDto;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Calendar;
 
 @RestController
 @RequestMapping("v1/api/payments/")
@@ -41,9 +44,12 @@ public interface PaymentApi {
   /**
    * Get payment details.
    *
-   * @param paymentId expenseId.
+   * @param userId userId.
    * @return payment details.
    */
-  @GetMapping("{paymentId}/")
-  PaymentDetailsDto getPaymentDetails(@PathVariable("paymentId") Integer paymentId);
+  @GetMapping("{groupId}/group/{userId}")
+  PaymentDetailsDto getPaymentDetails(
+      @PathVariable("groupId") Integer groupId,
+      @PathVariable("userId") Integer userId,
+      @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Calendar date);
 }

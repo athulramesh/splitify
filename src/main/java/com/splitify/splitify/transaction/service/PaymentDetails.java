@@ -1,13 +1,11 @@
 package com.splitify.splitify.transaction.service;
 
-import com.splitify.splitify.security.service.UserDetails;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
+import java.util.List;
 
 /** expense details dto */
 @Data
@@ -15,10 +13,5 @@ import java.util.Calendar;
 @AllArgsConstructor
 @Builder
 public class PaymentDetails {
-  private UserDetails receivedBy;
-  private Integer groupId;
-  private UserDetails paidBy;
-  private UserDetails createdBy;
-  private BigDecimal amount;
-  private Calendar onDate;
+  private List<PaymentDetailsList> payments;
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.List;
 
 /** expense details dto */
@@ -20,4 +21,5 @@ public class ExpenseDetailsDto {
   private BigDecimal amount;
   private BigDecimal settledAmount;
   private List<ExpenseShareDetailsDto> share;
+  private Calendar onDate;
 }

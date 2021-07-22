@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /** The Expense service. */
 @Service
@@ -26,6 +27,10 @@ public class ExpenseService {
   @Autowired private ExceptionUtils exceptionUtils;
   @Autowired private UserService userService;
   @Autowired private GroupService groupService;
+
+  private static int sorted(ExpenseDetails e1, ExpenseDetails e2) {
+    return e1.getOnDate().compareTo(e2.getOnDate());
+  }
 
   /**
    * Records the expense
@@ -157,6 +162,7 @@ public class ExpenseService {
         .paidBy(userService.getUserById(expenseEntity.getPaidBy()))
         .expenseName(expenseEntity.getExpenseName())
         .share(buildShare(expenseEntity.getExpenseShare()))
+        .onDate(expenseEntity.getOnDate())
         .build();
   }
 
@@ -655,6 +661,8 @@ public class ExpenseService {
         expenseEntity -> {
           expenses.add(buildExpense(expenseEntity));
         });
-    return UserExpenseDetails.builder().expenses(expenses).build();
+    return UserExpenseDetails.builder()
+        .expenses(expenses.stream().sorted(ExpenseService::sorted).collect(Collectors.toList()))
+        .build();
   }
 }

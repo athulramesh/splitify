@@ -8,19 +8,17 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.List;
 
+/** expense details dto */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ExpenseDetails {
-  private String expenseName;
+public class PaymentDetailsList {
+  private UserDetails receivedBy;
   private Integer groupId;
   private UserDetails paidBy;
   private UserDetails createdBy;
   private BigDecimal amount;
-  private BigDecimal settledAmount;
-  private List<ExpenseShareDetails> share;
   private Calendar onDate;
 }
