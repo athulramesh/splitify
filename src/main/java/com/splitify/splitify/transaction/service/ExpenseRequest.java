@@ -19,6 +19,7 @@ public class ExpenseRequest {
   private Integer paidBy;
   private Integer createdBy;
   private BigDecimal amount;
+  private BigDecimal dueAmount;
   private Calendar onDate;
   private List<ShareDetails> share;
   private Boolean isExcessPayment;

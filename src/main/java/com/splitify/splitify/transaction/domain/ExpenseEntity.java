@@ -39,6 +39,9 @@ public class ExpenseEntity {
   @Column(name = "AMOUNT")
   private BigDecimal amount;
 
+  @Column(name = "DUEAMOUNT")
+  private BigDecimal dueAmount;
+
   @Column(name = "SETTLEDAMOUNT")
   private BigDecimal settledAmount;
 
@@ -99,6 +102,7 @@ public class ExpenseEntity {
    */
   public void updateExpense(ExpenseRequest expenseRequest) {
     setAmount(expenseRequest.getAmount());
+    setDueAmount(expenseRequest.getDueAmount());
     setGroupId(expenseRequest.getGroupId());
     setExpenseName(expenseRequest.getExpenseName());
     setPaidBy(expenseRequest.getPaidBy());
@@ -238,6 +242,6 @@ public class ExpenseEntity {
   }
 
   public BigDecimal getOffsetAmount() {
-    return getAmount().subtract(getSettledAmount());
+    return getDueAmount().subtract(getSettledAmount());
   }
 }

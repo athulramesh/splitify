@@ -35,9 +35,14 @@ public class ExpenseService {
    */
   public Integer recordExpense(ExpenseRequest expenseRequest) {
     if (expenseRequest != null) {
+      BigDecimal dueAmount =
+          expenseRequest.getShare().stream()
+              .map(ShareDetails::getAmount)
+              .reduce(BigDecimal.ZERO, BigDecimal::add);
       ExpenseEntity expenseEntity =
           ExpenseEntity.builder()
               .amount(expenseRequest.getAmount())
+              .dueAmount(dueAmount)
               .createdBy(expenseRequest.getCreatedBy())
               .groupId(expenseRequest.getGroupId())
               .expenseName(expenseRequest.getExpenseName())
@@ -195,7 +200,7 @@ public class ExpenseService {
           BigDecimal offsetAmount = expense.getOffsetAmount();
           if (amount.compareTo(offsetAmount) >= 0) {
             amount = amount.subtract(offsetAmount);
-            expense.setSettledAmount(expense.getAmount());
+            expense.setSettledAmount(expense.getDueAmount());
             expense.setPaymentStatus(ExpensePaymentStatus.SETTLED.getCode());
           } else {
             expense.setSettledAmount(expense.getSettledAmount().add(amount));
