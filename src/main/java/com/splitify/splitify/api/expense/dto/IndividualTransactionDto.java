@@ -12,6 +12,6 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class IndividualTransactionDto {
   private UserDetailsDto person;
-  private Boolean isPaidBy;
+  private Boolean isToPay;
   private BigDecimal amount;
 }
