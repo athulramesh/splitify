@@ -1,5 +1,6 @@
 package com.splitify.splitify.transaction.domain;
 
+import com.splitify.splitify.transaction.enums.ExpensePaymentStatus;
 import com.splitify.splitify.transaction.enums.ExpenseSharePaymentStatus;
 import com.splitify.splitify.transaction.enums.ExpenseShareStatus;
 import com.splitify.splitify.transaction.enums.ExpenseStatus;
@@ -185,7 +186,20 @@ public class ExpenseEntity {
         break;
       }
     }
+    updateStatus();
     return amount;
+  }
+
+  /** Update payment status */
+  private void updateStatus() {
+    BigDecimal offsetAmount = getOffsetAmount();
+    if (offsetAmount.compareTo(BigDecimal.ZERO) == 0) {
+      setPaymentStatus(ExpensePaymentStatus.SETTLED.getCode());
+    } else if (offsetAmount.compareTo(dueAmount) == 0) {
+      setPaymentStatus(ExpensePaymentStatus.UNSETTLED.getCode());
+    } else {
+      setPaymentStatus(ExpensePaymentStatus.PARTIALLY_SETTLED.getCode());
+    }
   }
 
   /**
