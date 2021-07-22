@@ -35,7 +35,7 @@ public class ConnectionApiImpl implements ConnectionApi {
   }
 
   @Override
-  public String acceptConnectionRequest(ConnectionIdDto connectionIdDto) {
+  public Integer acceptConnectionRequest(ConnectionIdDto connectionIdDto) {
     return connectionService.acceptConnectionRequest(connectionIdDto);
   }
 

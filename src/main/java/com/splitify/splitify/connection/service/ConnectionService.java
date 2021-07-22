@@ -74,7 +74,7 @@ public class ConnectionService {
     return userRepository.findById(id).orElseThrow(() -> new Exception("User Not Found"));
   }
 
-  public String acceptConnectionRequest(ConnectionIdDto connectionIdDto) {
+  public Integer acceptConnectionRequest(ConnectionIdDto connectionIdDto) {
     ConnectionEntity connectionEntityRequest =
         connectionRepository.findByConnectionId(connectionIdDto.getConnectionId());
     connectionEntityRequest.setStatus(ConnectionStatus.ACTIVE.getCode());
@@ -84,8 +84,7 @@ public class ConnectionService {
             connectionEntityRequest.getConnectionFromId(),
             connectionEntityRequest.getConnectionToId());
     connectionEntityRequest.setGroupid(groupId);
-    connectionRepository.save(connectionEntityRequest);
-    return "Success";
+    return connectionRepository.save(connectionEntityRequest).getGroupid();
   }
 
   public String rejectConnectionRequest(ConnectionIdDto connectionIdDto) {

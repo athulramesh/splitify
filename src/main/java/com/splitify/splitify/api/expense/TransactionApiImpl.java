@@ -5,11 +5,13 @@ import com.splitify.splitify.api.expense.dto.GroupTransactionDetailsDto;
 import com.splitify.splitify.api.expense.dto.IndividualTransactionDetailsDto;
 import com.splitify.splitify.transaction.service.ExpenseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/api/transactions")
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 public class TransactionApiImpl implements TransactionApi {
   @Autowired ExpenseService expenseService;
   @Autowired ExpenseAssembler assembler;

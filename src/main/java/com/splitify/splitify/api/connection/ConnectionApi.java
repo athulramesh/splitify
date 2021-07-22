@@ -22,7 +22,7 @@ public interface ConnectionApi {
       @PathVariable("userId") Integer userId, @RequestParam ConnectionStatus type);
 
   @PutMapping("/approve")
-  String acceptConnectionRequest(@RequestBody ConnectionIdDto connectionIdDto);
+  Integer acceptConnectionRequest(@RequestBody ConnectionIdDto connectionIdDto);
 
   @PutMapping("/reject")
   String rejectConnectionRequest(@RequestBody ConnectionIdDto connectionIdDto);
