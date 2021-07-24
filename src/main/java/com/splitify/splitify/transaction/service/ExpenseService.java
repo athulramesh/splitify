@@ -534,22 +534,27 @@ public class ExpenseService {
             }
             map.remove(id);
           }
-          individualTransactions.add(
-              IndividualTransaction.builder()
-                  .amount(amount)
-                  .isToPay(isToPay)
-                  .person(userService.getUserById(t.get(0, Integer.class)))
-                  .build());
+          if (amount.compareTo(BigDecimal.ZERO) > 0) {
+            individualTransactions.add(
+                IndividualTransaction.builder()
+                    .amount(amount)
+                    .isToPay(isToPay)
+                    .person(userService.getUserById(t.get(0, Integer.class)))
+                    .build());
+          }
         });
     if (!CollectionUtils.isEmpty(map)) {
       map.forEach(
-          (key, value) ->
+          (key, value) -> {
+            if (value.compareTo(BigDecimal.ZERO) > 0) {
               individualTransactions.add(
                   IndividualTransaction.builder()
                       .amount(value)
                       .isToPay(Boolean.FALSE)
                       .person(userService.getUserById(key))
-                      .build()));
+                      .build());
+            }
+          });
     }
     return IndividualTransactionDetails.builder()
         .individualTransaction(individualTransactions)
