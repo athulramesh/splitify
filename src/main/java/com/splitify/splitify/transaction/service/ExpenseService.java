@@ -60,7 +60,9 @@ public class ExpenseService {
               .build();
       expenseEntity.addExpenseShare(expenseRequest.getShare());
       Integer expenseId = repository.save(expenseEntity).getExpenseId();
-      if (expenseRequest.getIsExcessPayment() != null && !expenseRequest.getIsExcessPayment()) {
+      if (expenseRequest.getIsExcessPayment() == null
+          || (expenseRequest.getIsExcessPayment() != null
+              && !expenseRequest.getIsExcessPayment())) {
         groupService.updateDebtsAfterExpenseAdd(expenseRequest.getGroupId());
       }
       return expenseId;
@@ -199,6 +201,7 @@ public class ExpenseService {
       Integer groupId, Integer paidBy, Integer receivedBy, BigDecimal amount) {
     List<ExpenseEntity> expenseEntities = repository.findByGroupIdAndPaidBy(groupId, receivedBy);
     List<PaymentShareVo> paymentShareVos = new ArrayList<>();
+    BigDecimal receivedAmount = amount;
     if (groupService.isSimplifiedGroup(groupId)) {
       BigDecimal paidAmount = amount;
       for (ExpenseEntity expense : expenseEntities) {
@@ -240,9 +243,10 @@ public class ExpenseService {
     if (amount.compareTo(BigDecimal.ZERO) > 0) {
       ExpenseRequest request = getExpenseRequest(groupId, paidBy, amount, receivedBy);
       recordExpense(request);
+    } else {
+      groupService.updateDebtsAfterPayment(groupId, paidBy, receivedBy, receivedAmount);
     }
     repository.saveAll(expenseEntities);
-    groupService.updateDebtsAfterExpenseAdd(groupId);
     return paymentShareVos;
   }
 

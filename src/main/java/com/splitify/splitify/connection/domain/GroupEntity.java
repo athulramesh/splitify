@@ -147,4 +147,21 @@ public class GroupEntity {
         });
     return amount[0];
   }
+
+  public void updateDebtPayment(Integer paidBy, Integer receivedBy, BigDecimal amount) {
+    DebtEntity debtEntity =
+        debt.stream()
+            .filter(
+                d -> d.getFromId().compareTo(paidBy) == 0 && d.getToId().compareTo(receivedBy) == 0)
+            .findFirst()
+            .orElse(null);
+    if (debtEntity != null) {
+      BigDecimal updatedAmount = debtEntity.getAmount().subtract(amount);
+      if (updatedAmount.compareTo(BigDecimal.ZERO) > 0) {
+        debtEntity.setAmount(updatedAmount);
+      } else {
+        debt.remove(debtEntity);
+      }
+    }
+  }
 }
