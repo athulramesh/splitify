@@ -43,4 +43,8 @@ public class ConnectionApiImpl implements ConnectionApi {
   public String rejectConnectionRequest(ConnectionIdDto connectionIdDto) {
     return connectionService.rejectConnectionRequest(connectionIdDto);
   }
+
+  public String cancelConnectionRequest(ConnectionIdDto connectionIdDto) {
+    return connectionService.cancelConnectionRequest(connectionIdDto);
+  }
 }

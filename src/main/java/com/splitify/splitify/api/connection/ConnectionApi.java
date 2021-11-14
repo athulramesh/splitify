@@ -26,4 +26,7 @@ public interface ConnectionApi {
 
   @PutMapping("/reject")
   String rejectConnectionRequest(@RequestBody ConnectionIdDto connectionIdDto);
+
+  @PutMapping("/cancel")
+  String cancelConnectionRequest(@RequestBody ConnectionIdDto connectionIdDto);
 }

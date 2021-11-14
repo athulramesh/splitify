@@ -15,6 +15,7 @@ import java.util.Calendar;
 @AllArgsConstructor
 @Builder
 public class PaymentDetailsList {
+  private Integer paymentId;
   private UserDetails receivedBy;
   private Integer groupId;
   private UserDetails paidBy;

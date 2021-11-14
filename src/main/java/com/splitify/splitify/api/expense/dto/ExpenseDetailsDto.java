@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExpenseDetailsDto {
+  private Integer expenseId;
   private String expenseName;
   private Integer groupId;
   private UserDetailsDto paidBy;

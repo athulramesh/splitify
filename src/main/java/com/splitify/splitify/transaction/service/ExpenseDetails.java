@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ExpenseDetails {
+  private Integer expenseId;
   private String expenseName;
   private Integer groupId;
   private UserDetails paidBy;

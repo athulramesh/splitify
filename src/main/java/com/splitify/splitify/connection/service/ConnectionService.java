@@ -95,4 +95,13 @@ public class ConnectionService {
     connectionRepository.save(connectionEntityRequest);
     return "Success";
   }
+
+  public String cancelConnectionRequest(ConnectionIdDto connectionIdDto) {
+    ConnectionEntity connectionEntityRequest =
+            connectionRepository.findByConnectionId(connectionIdDto.getConnectionId());
+    connectionEntityRequest.setStatus(ConnectionStatus.CANCELLED.getCode());
+    connectionEntityRequest.setCancelledDate(Calendar.getInstance());
+    connectionRepository.save(connectionEntityRequest);
+    return "Success";
+  }
 }
