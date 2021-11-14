@@ -155,6 +155,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     QExpenseShareEntity expenseShareEntity = QExpenseShareEntity.expenseShareEntity;
     BooleanBuilder where = new BooleanBuilder();
     where.and(expenseShareEntity.owedBy.eq(paidBy));
+    where.and(expenseEntity.groupId.eq(groupId));
     where.and(expenseShareEntity.paymentStatus.in(1, 2));
 
     JPAQuery<ExpenseEntity> query = new JPAQuery<>(entityManager);
@@ -164,6 +165,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
         .innerJoin(expenseShareEntity)
         .on(expenseEntity.expenseId.eq(expenseShareEntity.expense.expenseId))
         .where(where)
+        .distinct()
         .fetch();
   }
 
@@ -180,6 +182,7 @@ public class ExpenseRepositoryCustomImpl implements ExpenseRepositoryCustom {
     QExpenseShareEntity expenseShareEntity = QExpenseShareEntity.expenseShareEntity;
     BooleanBuilder where = new BooleanBuilder();
     where.and(expenseShareEntity.owedBy.eq(userId).and(expenseShareEntity.paymentStatus.in(1, 2)));
+    where.and(expenseEntity.paymentStatus.ne(0));
     where.and(expenseEntity.groupId.eq(groupId));
     JPAQuery<ExpenseEntity> query = new JPAQuery<>(entityManager);
     return query

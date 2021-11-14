@@ -157,21 +157,29 @@ public class ExpenseEntity {
    * @param receivedBy receivedBy
    * @param amount amount
    * @param paymentShareVos paymentShareVos
+   * @param isSimplified isSimplified
    * @return amount
    */
   public BigDecimal updateExpenseShareAmount(
-      Integer receivedBy, BigDecimal amount, List<PaymentShareVo> paymentShareVos) {
+      Integer receivedBy,
+      BigDecimal amount,
+      List<PaymentShareVo> paymentShareVos,
+      boolean isSimplified) {
     for (ExpenseShareEntity share : expenseShare) {
       if (share.getOwedBy().equals(receivedBy)
           && share.getRemainingAmount().compareTo(BigDecimal.ZERO) > 0) {
         BigDecimal remainingAmount = share.getRemainingAmount();
         if (amount.compareTo(remainingAmount) >= 0) {
           share.setSettledAmount(share.getAmount());
-          setSettledAmount(getSettledAmount().add(remainingAmount));
+          if(!isSimplified){
+            setSettledAmount(getSettledAmount().add(remainingAmount));
+          }
           share.setPaymentStatus(ExpenseSharePaymentStatus.SETTLED.getCode());
         } else {
           share.setSettledAmount(share.getSettledAmount().add(amount));
-          setSettledAmount(getSettledAmount().add(amount));
+          if(!isSimplified){
+            setSettledAmount(getSettledAmount().add(amount));
+          }
           share.setPaymentStatus(ExpenseSharePaymentStatus.PARTIALLY_SETTLED.getCode());
         }
         paymentShareVos.add(
@@ -190,10 +198,17 @@ public class ExpenseEntity {
     return amount;
   }
 
-  /** Update payment status */
+  /**
+   * Update payment status
+   *
+   */
   private void updateStatus() {
     BigDecimal offsetAmount = getOffsetAmount();
-    if (offsetAmount.compareTo(BigDecimal.ZERO) == 0) {
+    BigDecimal shareSum =
+        expenseShare.stream()
+            .map(ExpenseShareEntity::getSettledAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    if (offsetAmount.compareTo(BigDecimal.ZERO) == 0 && shareSum.compareTo(dueAmount)==0) {
       setPaymentStatus(ExpensePaymentStatus.SETTLED.getCode());
     } else if (offsetAmount.compareTo(dueAmount) == 0) {
       setPaymentStatus(ExpensePaymentStatus.UNSETTLED.getCode());

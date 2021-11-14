@@ -202,7 +202,8 @@ public class ExpenseService {
     List<ExpenseEntity> expenseEntities = repository.findByGroupIdAndPaidBy(groupId, receivedBy);
     List<PaymentShareVo> paymentShareVos = new ArrayList<>();
     BigDecimal receivedAmount = amount;
-    if (groupService.isSimplifiedGroup(groupId)) {
+    boolean isSimplified = groupService.isSimplifiedGroup(groupId);
+    if (isSimplified) {
       BigDecimal paidAmount = amount;
       for (ExpenseEntity expense : expenseEntities) {
         if (amount.compareTo(BigDecimal.ZERO) > 0) {
@@ -224,7 +225,7 @@ public class ExpenseService {
       List<ExpenseEntity> payerExpenses = repository.getExpensesByOwner(groupId, paidBy);
       for (ExpenseEntity expense : payerExpenses) {
         if (paidAmount.compareTo(BigDecimal.ZERO) > 0) {
-          paidAmount = expense.updateExpenseShareAmount(paidBy, paidAmount, paymentShareVos);
+          paidAmount = expense.updateExpenseShareAmount(paidBy, paidAmount, paymentShareVos, true);
           if (paidAmount.compareTo(BigDecimal.ZERO) <= 0) {
             break;
           }
@@ -233,7 +234,7 @@ public class ExpenseService {
     } else {
       for (ExpenseEntity expense : expenseEntities) {
         if (amount.compareTo(BigDecimal.ZERO) > 0) {
-          amount = expense.updateExpenseShareAmount(paidBy, amount, paymentShareVos);
+          amount = expense.updateExpenseShareAmount(paidBy, amount, paymentShareVos, false);
           if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             break;
           }
@@ -245,6 +246,16 @@ public class ExpenseService {
       recordExpense(request);
     } else {
       groupService.updateDebtsAfterPayment(groupId, paidBy, receivedBy, receivedAmount);
+      GroupEntity groupEntity = groupService.getGroupById(groupId);
+      if (isSimplified && CollectionUtils.isEmpty(groupEntity.getDebt())) {
+        List<ExpenseEntity> unsettled =
+            repository.findByGroupIdAndPaymentStatusIn(
+                groupId,
+                Arrays.asList(
+                    ExpensePaymentStatus.PARTIALLY_SETTLED.getCode(),
+                    ExpensePaymentStatus.UNSETTLED.getCode()));
+        unsettled.forEach(u -> u.setPaymentStatus(ExpensePaymentStatus.SETTLED.getCode()));
+      }
     }
     repository.saveAll(expenseEntities);
     return paymentShareVos;
@@ -684,6 +695,10 @@ public class ExpenseService {
    * @return user expenses
    */
   public UserExpenseDetails getUserExpenses(Integer userId, Integer groupId) {
+    GroupEntity groupEntity = groupService.getGroupById(groupId);
+    if (groupEntity.getIsSimplified() && CollectionUtils.isEmpty(groupEntity.getDebt())) {
+      return UserExpenseDetails.builder().expenses(Collections.emptyList()).build();
+    }
     List<ExpenseEntity> expenseEntities =
         repository.findByGroupIdAndPaidByAndPaymentStatusIn(
             groupId,
