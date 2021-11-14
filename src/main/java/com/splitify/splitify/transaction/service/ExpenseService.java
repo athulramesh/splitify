@@ -157,8 +157,10 @@ public class ExpenseService {
    */
   private ExpenseDetails buildExpense(ExpenseEntity expenseEntity) {
     return ExpenseDetails.builder()
+        .expenseId(expenseEntity.getExpenseId())
         .amount(expenseEntity.getAmount())
-        .settledAmount(expenseEntity.getSettledAmount())
+        //        .settledAmount(expenseEntity.getSettledAmount())
+        .settledAmount(expenseEntity.getOffsetAmount())
         .createdBy(userService.getUserById(expenseEntity.getCreatedBy()))
         .groupId(expenseEntity.getGroupId())
         .paidBy(userService.getUserById(expenseEntity.getPaidBy()))
@@ -184,6 +186,7 @@ public class ExpenseService {
                     .ownerId(userService.getUserById(expenseShareEntity.getOwedBy()))
                     .paidDate(expenseShareEntity.getPaidDate())
                     .settledAmount(expenseShareEntity.getSettledAmount())
+                    .remainingAmount(expenseShareEntity.getRemainingAmount())
                     .build()));
     return shareDetailsList;
   }

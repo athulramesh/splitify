@@ -17,5 +17,6 @@ public class ExpenseShareDetailsDto {
   private UserDetails ownerId;
   private BigDecimal amount;
   private BigDecimal settledAmount;
+  private BigDecimal remainingAmount;
   private Calendar paidDate;
 }

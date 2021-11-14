@@ -8,7 +8,8 @@ import lombok.NoArgsConstructor;
 public enum ConnectionStatus {
   NEW(0),
   ACTIVE(1),
-  REJECTED(2);
+  REJECTED(2),
+  CANCELLED(3);
 
   private int code;
 

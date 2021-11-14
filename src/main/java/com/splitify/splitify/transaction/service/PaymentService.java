@@ -130,6 +130,7 @@ public class PaymentService {
    */
   private PaymentDetailsList buildPayment(PaymentEntity paymentEntity) {
     return PaymentDetailsList.builder()
+        .paymentId(paymentEntity.getPaymentId())
         .amount(paymentEntity.getAmount())
         .createdBy(userService.getUserById(paymentEntity.getCreatedBy()))
         .groupId(paymentEntity.getGroupId())

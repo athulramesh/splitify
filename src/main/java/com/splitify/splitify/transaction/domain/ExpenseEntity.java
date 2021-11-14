@@ -102,8 +102,13 @@ public class ExpenseEntity {
    * @param expenseRequest expenseRequests
    */
   public void updateExpense(ExpenseRequest expenseRequest) {
+    BigDecimal dueAmount =
+        expenseRequest.getShare().stream()
+            .map(ShareDetails::getAmount)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
     setAmount(expenseRequest.getAmount());
-    setDueAmount(expenseRequest.getDueAmount());
+    setDueAmount(dueAmount);
     setGroupId(expenseRequest.getGroupId());
     setExpenseName(expenseRequest.getExpenseName());
     setPaidBy(expenseRequest.getPaidBy());
