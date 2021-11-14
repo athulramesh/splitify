@@ -171,13 +171,13 @@ public class ExpenseEntity {
         BigDecimal remainingAmount = share.getRemainingAmount();
         if (amount.compareTo(remainingAmount) >= 0) {
           share.setSettledAmount(share.getAmount());
-          if(!isSimplified){
+          if (!isSimplified) {
             setSettledAmount(getSettledAmount().add(remainingAmount));
           }
           share.setPaymentStatus(ExpenseSharePaymentStatus.SETTLED.getCode());
         } else {
           share.setSettledAmount(share.getSettledAmount().add(amount));
-          if(!isSimplified){
+          if (!isSimplified) {
             setSettledAmount(getSettledAmount().add(amount));
           }
           share.setPaymentStatus(ExpenseSharePaymentStatus.PARTIALLY_SETTLED.getCode());
@@ -198,17 +198,14 @@ public class ExpenseEntity {
     return amount;
   }
 
-  /**
-   * Update payment status
-   *
-   */
+  /** Update payment status */
   private void updateStatus() {
     BigDecimal offsetAmount = getOffsetAmount();
     BigDecimal shareSum =
         expenseShare.stream()
             .map(ExpenseShareEntity::getSettledAmount)
             .reduce(BigDecimal.ZERO, BigDecimal::add);
-    if (offsetAmount.compareTo(BigDecimal.ZERO) == 0 && shareSum.compareTo(dueAmount)==0) {
+    if (offsetAmount.compareTo(BigDecimal.ZERO) == 0 && shareSum.compareTo(dueAmount) == 0) {
       setPaymentStatus(ExpensePaymentStatus.SETTLED.getCode());
     } else if (offsetAmount.compareTo(dueAmount) == 0) {
       setPaymentStatus(ExpensePaymentStatus.UNSETTLED.getCode());

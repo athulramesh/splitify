@@ -281,8 +281,9 @@ public class GroupService {
     return simplifiedTransactions;
   }
 
-  public void updateDebtsAfterPayment(Integer groupId, Integer paidBy, Integer receivedBy, BigDecimal amount) {
+  public void updateDebtsAfterPayment(
+      Integer groupId, Integer paidBy, Integer receivedBy, BigDecimal amount) {
     GroupEntity groupEntity = getGroupById(groupId);
-    groupEntity.updateDebtPayment(paidBy,receivedBy,amount);
+    groupEntity.updateDebtPayment(paidBy, receivedBy, amount);
   }
 }
