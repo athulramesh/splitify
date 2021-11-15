@@ -16,6 +16,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
@@ -48,10 +51,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf()
+    http.cors()
+        .configurationSource(
+            request -> {
+              CorsConfiguration cors = new CorsConfiguration();
+              cors.setAllowedOrigins(Arrays.asList("https://simplifysplit.web.app/"));
+              cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+              cors.setAllowedHeaders(Arrays.asList("*"));
+              return cors;
+            })
+        .and()
+        .csrf()
         .disable()
         .authorizeRequests()
-        .antMatchers("/sign-in", "/sign-up", "/sign-out", "/v1/api/**")
+        .antMatchers("/sign-in", "/sign-up", "/sign-out")
         .permitAll()
         .anyRequest()
         .authenticated()

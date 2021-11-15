@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("v1/api/users")
-@CrossOrigin(origins = "https://simplifysplit.web.app/")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public interface UserApi {
   @GetMapping()
   UserDetailsDto getUserByUserName(@RequestParam String userName) throws Exception;
