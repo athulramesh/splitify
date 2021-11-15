@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("v1/api/expenses/")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app", allowedHeaders = "*")
 public class ExpenseApiImpl implements ExpenseApi {
 
   @Autowired private ExpenseService service;
