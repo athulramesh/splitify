@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/v1/api/transactions")
-@CrossOrigin(origins = "https://simplifysplit.web.app", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public interface TransactionApi {
   /**
    * Gets the group wise transactions

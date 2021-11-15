@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/connections/{userId}")
-@CrossOrigin(origins = "https://simplifysplit.web.app", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public interface ConnectionApi {
 
   @PostMapping()

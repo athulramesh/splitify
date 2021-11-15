@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("v1/api/groups/")
-@CrossOrigin(origins = "https://simplifysplit.web.app", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public class GroupApiImpl implements GroupApi {
   @Autowired GroupService groupService;
   @Autowired ConnectionAssembler assembler;

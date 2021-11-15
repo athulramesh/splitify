@@ -12,7 +12,7 @@ import java.util.Calendar;
 
 @RestController
 @RequestMapping("v1/api/payments/")
-@CrossOrigin(origins = "https://simplifysplit.web.app", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public class PaymentApiImpl implements PaymentApi {
 
   @Autowired private PaymentService service;
