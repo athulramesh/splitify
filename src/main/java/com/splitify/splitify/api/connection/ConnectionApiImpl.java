@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("v1/api/connections/{userId}")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public class ConnectionApiImpl implements ConnectionApi {
 
   @Autowired ConnectionService connectionService;

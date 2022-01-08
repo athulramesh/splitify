@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("v1/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public class UserApiImpl implements UserApi {
 
   @Autowired private UserService userService;

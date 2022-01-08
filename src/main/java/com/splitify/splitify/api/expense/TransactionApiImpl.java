@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/api/transactions")
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
+@CrossOrigin(origins = "https://simplifysplit.web.app/", allowedHeaders = "*")
 public class TransactionApiImpl implements TransactionApi {
   @Autowired ExpenseService expenseService;
   @Autowired ExpenseAssembler assembler;
