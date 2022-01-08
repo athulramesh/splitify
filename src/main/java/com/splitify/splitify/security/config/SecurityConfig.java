@@ -55,7 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .configurationSource(
             request -> {
               CorsConfiguration cors = new CorsConfiguration();
-              cors.setAllowedOrigins(Arrays.asList("https://simplifysplit.web.app/"));
+              cors.setAllowedOrigins(Arrays.asList("http://localhost:3000/"));
               cors.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
               cors.setAllowedHeaders(Arrays.asList("*"));
               return cors;
