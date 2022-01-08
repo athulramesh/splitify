@@ -58,6 +58,7 @@ public class UserService {
    * @return JWT token
    */
   public AuthResponse signUp(User user) {
+    validateUSer(user);
     String encodedPassword = passwordEncoder.encode(user.getPassword());
     UserEntity userEntity =
         UserEntity.builder()
@@ -69,6 +70,13 @@ public class UserService {
     userEntity.addCredential(encodedPassword);
     userRepository.save(userEntity);
     return buildAutResponse(user.getUserName());
+  }
+
+  private void validateUSer(User user) {
+    UserEntity userEntity=userRepository.findByUserName(user.getUserName());
+    if(userEntity!=null){
+      exception.throwBadRequestException("Username is taken");
+    }
   }
 
   /**
